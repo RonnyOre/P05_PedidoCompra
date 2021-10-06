@@ -38,18 +38,18 @@ class ERP_COMP_P001(QMainWindow):
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-        # global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
-        #
-        # Cod_Soc='1000'
-        # Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
-        # Cod_Usuario='2021100004'
+        global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
 
-    def datosGenerales(self, codSoc, empresa, usuario):
+        Cod_Soc='1000'
+        Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
+        Cod_Usuario='2021100004'
 
-        global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
-        Cod_Soc = codSoc
-        Nom_Soc = empresa
-        Cod_Usuario = usuario
+    # def datosGenerales(self, codSoc, empresa, usuario):
+    #
+    #     global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
+    #     Cod_Soc = codSoc
+    #     Nom_Soc = empresa
+    #     Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)
@@ -277,7 +277,7 @@ class ERP_COMP_P001(QMainWindow):
             class PDF(FPDF):
                 def header(self):
                     self.image('Logos/LogoMp_st.png', 20, 10, 55)
-                    self.image('Logos/LogoMc.png', 222, 10, 55)
+                    self.image('Logos/Logo'+ Cod_Soc +'.png', 222, 10, 55)
                     self.set_font('Arial', 'B', 13)
                     ## Posición del título en el centro
                     w = self.get_string_width(title) + 6
@@ -315,8 +315,8 @@ class ERP_COMP_P001(QMainWindow):
             # pdf.set_fill_color(255,0,120)
             pdf.set_fill_color(255, 213, 79)
             pdf.cell(20, 10, 'Nro. Cot.', 1, 0, 'C', 1)
-            pdf.cell(88, 10, 'Proveedor', 1, 0, 'C', 1)
-            pdf.cell(15, 10, 'Teléfono', 1, 0, 'C', 1)
+            pdf.cell(86, 10, 'Proveedor', 1, 0, 'C', 1)
+            pdf.cell(17, 10, 'Teléfono', 1, 0, 'C', 1)
             pdf.cell(20, 10, 'Monto Apr.', 1, 0, 'C', 1)
             pdf.cell(20, 10, 'Fecha Apr.', 1, 0, 'C', 1)
             pdf.cell(15, 10, 'Nro. Req.', 1, 0, 'C', 1)
@@ -325,11 +325,11 @@ class ERP_COMP_P001(QMainWindow):
             pdf.cell(14, 10, 'Estado', 1, 2, 'C', 1)
             # pdf.cell(-90)
             pdf.cell(-263)
-            pdf.set_font('arial', '', 9)
+            pdf.set_font('arial', '', 8)
             for i in range(0, len(df)):
                 pdf.cell(20, 8, '%s' % (df['1'].iloc[i]), 1, 0, 'C')
-                pdf.cell(88, 8, '%s' % (df['2'].iloc[i]), 1, 0, 'C')
-                pdf.cell(15, 8, '%s' % (df['3'].iloc[i]), 1, 0, 'C')
+                pdf.cell(86, 8, '%s' % (df['2'].iloc[i]), 1, 0, 'C')
+                pdf.cell(17, 8, '%s' % (df['3'].iloc[i]), 1, 0, 'C')
                 pdf.cell(20, 8, '%s' % (df['4'].iloc[i]), 1, 0, 'C')
                 pdf.cell(20, 8, '%s' % (df['5'].iloc[i]), 1, 0, 'C')
                 pdf.cell(15, 8, '%s' % (df['6'].iloc[i]), 1, 0, 'C')

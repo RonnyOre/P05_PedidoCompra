@@ -369,7 +369,9 @@ class Pedido_de_Compra(QMainWindow):
                 Estado_Pedido='1'
                 self.leEstado.setText('Proceso Emisión')
 
-                sqlDatosCab="SELECT Moneda, Monto_Desc, Descuento, Forma_Pago, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_Garantia, Forma_Garantia,Forma_Envio,FValidez_oferta FROM TAB_COMP_001_Cotización_Compra WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s'"%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
+                sqlDatosCab='''SELECT Moneda, Monto_Desc, Descuento, Forma_Pago, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_Garantia, Forma_Garantia,Forma_Envio,FValidez_oferta
+                FROM TAB_COMP_001_Cotización_Compra
+                WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
                 DatosCab=convlist(sqlDatosCab)
 
                 moneda=DatosCab[0]
@@ -385,7 +387,7 @@ class Pedido_de_Compra(QMainWindow):
                 formagarantia=DatosCab[10]
 
                 sqlCabecera_PedComp='''INSERT INTO TAB_COMP_004_Pedido_Compra(Cod_Emp, Nro_Pedido, Año_Pedido, Tipo_Pedido, Cod_Prov, Nro_Cotiza, Fecha_Doc_Pedido, Nro_Solp, Estado_Pedido, Moneda, Monto_Desc, Descuento, Forma_Pago, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_garantia, Forma_Garantia, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                VALUES  ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (Cod_Soc,Nro_Pedido,Año,Tipo_pedido,Cod_Prov,Nro_Cotiza,Fecha,NroSolp[0],Estado_Pedido,moneda,montodesc,descuento,formapago,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,Fecha,Hora,Cod_Usuario)
+                VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Cod_Soc,Nro_Pedido,Año,Tipo_pedido,Cod_Prov,Nro_Cotiza,Fecha,NroSolp[0],Estado_Pedido,moneda,montodesc,descuento,formapago,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,Fecha,Hora,Cod_Usuario)
                 respuesta=ejecutarSql(sqlCabecera_PedComp)
 
                 self.pbCon_Cab.setEnabled(True)
@@ -510,9 +512,19 @@ class Pedido_de_Compra(QMainWindow):
     def Imprimir(self):
         global ruta_Pdf
 
-        sqlDatosCab='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta FROM TAB_COMP_001_Cotización_Compra a LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON a.Banco_deposito=c.Cod_Banco
-        LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s';'''%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
+        sqlDatosCab='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
+        FROM TAB_COMP_001_Cotización_Compra a
+        LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+        LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON a.Banco_deposito=c.Cod_Banco
+        LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
+        LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
+        WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s';'''%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
         DatosCab=convlist(sqlDatosCab)
+
+        sqlFecha_Entrega='''SELECT MAX(Fecha_Ent_Prov)
+        FROM TAB_COMP_002_Detalle_Cotización_de_Compra
+        WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
+        FechaEntrega=convlist(sqlFecha_Entrega)
 
         try:
             list_item = []
@@ -572,7 +584,7 @@ class Pedido_de_Compra(QMainWindow):
             class PDF(FPDF):
                 def header(self):
                     self.image('Logos/LogoMp_st.png', 20, 10, 55)
-                    self.image('Logos/LogoMc.png', 222, 10, 55)
+                    self.image('Logos/Logo'+ Cod_Soc +'.png', 222, 10, 55)
                     self.set_font('Arial', 'B', 13)
                     ## Posición del título en el centro
                     w = self.get_string_width(title) + 6
@@ -591,10 +603,10 @@ class Pedido_de_Compra(QMainWindow):
                     self.cell(30, 8, Nro_Cotiza, 0, 0,'C')
                     self.cell(30)
                     self.cell(30, 8, "Fecha Req. : ", 0, 0,'L')
-                    self.cell(30, 8, Fecha_Req, 0, 0,'C')
+                    self.cell(30, 8, formatearFecha(Fecha_Req), 0, 0,'C')
                     self.cell(30)
                     self.cell(30, 8, "Fecha Entrega : ", 0, 0,'L')
-                    self.cell(37, 8, "", 0, 2,'C')
+                    self.cell(37, 8, formatearFecha(FechaEntrega[0]), 0, 2,'C')
                     ## Segunda Fila Encabezado
                     self.cell(-220)
                     self.cell(40, 8, "Proveedor : ", 0, 0,'L')
