@@ -623,7 +623,7 @@ class Pedido_de_Compra(QMainWindow):
                     self.cell(30, 8, DatosCab[4], 0, 0,'C')
                     self.cell(30)
                     self.cell(30, 8, "Monto Depósito : ", 0, 0,'L')
-                    self.cell(37, 8, formatearDecimal(Monto_Aprobado,'3'), 0, 2,'C')
+                    self.cell(37, 8, formatearDecimal(Monto_Aprobado,'2'), 0, 2,'C')
                     ## Cuarta Fila Encabezado
                     self.cell(-220)
                     self.cell(40, 8, "Forma de Envío : ", 0, 0,'L')
