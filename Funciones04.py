@@ -251,7 +251,7 @@ def EnviarCorreo(CorreoRemitente,Archivo,Asunto,Cuerpo):
     cuerpo = Cuerpo
     ruta_adjunto = Archivo
     NombreArchivo=Archivo.split('\\')
-    NombreArchivo=NombreArchivo[-1][:-4]
+    NombreArchivo=NombreArchivo[-1]
     nombre_adjunto = NombreArchivo
 
     # Creamos el objeto mensaje

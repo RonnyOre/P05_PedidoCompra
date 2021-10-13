@@ -526,6 +526,11 @@ class Pedido_de_Compra(QMainWindow):
         WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Cod_Soc, Año, Cod_Prov, Nro_Cotiza)
         FechaEntrega=convlist(sqlFecha_Entrega)
 
+        Nro_Pedido=self.leNro_Pedido.text()
+
+        sqlTexCab="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(Cod_Soc,Año,Nro_Pedido)
+        TexCab=convlist(sqlTexCab)
+
         try:
             list_item = []
             list_descripcion = []
@@ -561,8 +566,6 @@ class Pedido_de_Compra(QMainWindow):
                     list_total.append(self.tbwPed_Comp.item(i,6).text())
                 except:
                     list_total.append("")
-
-            Nro_Pedido=self.leNro_Pedido.text()
 
             print("LISTA 1: ",list_item)
             print("LISTA 2: ",list_descripcion)
@@ -680,7 +683,11 @@ class Pedido_de_Compra(QMainWindow):
 
                 pdf.cell(-252)
 
-            pdf.ln(60)
+            # pdf.ln(60)
+            pdf.ln(10)
+            pdf.set_font('Arial', 'B', 9)
+            pdf.cell(30, 8, "Observaciones: ", 1, 0,'L', 1)
+            pdf.cell(30, 8, TexCab[1], 0, 0,'C')
             pdf.set_font('Arial', 'B', 9)
             pdf.set_text_color(0, 0, 0)
             pdf.cell(277, 5, '----------------------------------------------', 0, 2, 'C') # los guiones ocupan los 50mm
@@ -711,8 +718,11 @@ class Pedido_de_Compra(QMainWindow):
 
             sql="SELECT Correo_Inter FROM TAB_COMP_013_Pedido_de_Compra_Interlocutor WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Cod_Soc,Año,Nro_Pedido)
             correo=convlist(sql)
+            sqlUsuario="SELECT Correo FROM TAB_SOC_005_Usuarios WHERE Cod_Soc='%s' AND Cod_usuario='%s';"%(Cod_Soc,Cod_Usuario)
+            mailUsuario=convlist(sqlUsuario)
             if correo != []:
                 EnviarCorreo(correo[0],ruta_Pdf,"Pedido de Compra","Atte. Multiplay")
+                EnviarCorreo(mailUsuario[0],ruta_Pdf,"Pedido de Compra","Atte. Multiplay")
                 sqlCab="UPDATE TAB_COMP_004_Pedido_Compra SET Estado_Pedido='%s', Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Emp='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Nro_Pedido)
                 ejecutarSql(sqlCab)
                 sqlDet="UPDATE TAB_COMP_005_Detalle_Pedido_de_Compra SET Estado_Pedido='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Nro_Pedido)
