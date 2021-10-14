@@ -685,9 +685,15 @@ class Pedido_de_Compra(QMainWindow):
 
             # pdf.ln(60)
             pdf.ln(10)
-            pdf.set_font('Arial', 'B', 9)
-            pdf.cell(30, 8, "Observaciones: ", 1, 0,'L', 1)
-            pdf.cell(30, 8, TexCab[1], 0, 0,'C')
+            if TexCab==[]:
+                pdf.ln(50)
+            else:
+                pdf.set_font('Arial', 'B', 9)
+                pdf.cell(27, 8, "Observaciones: ", 0, 0,'L')
+                pdf.set_font('Arial', '', 9)
+                # pdf.cell(25, 8, "", 0, 0,'L')
+                pdf.cell(250, 8, TexCab[0], 0, 2,'L')
+                pdf.ln(35)
             pdf.set_font('Arial', 'B', 9)
             pdf.set_text_color(0, 0, 0)
             pdf.cell(277, 5, '----------------------------------------------', 0, 2, 'C') # los guiones ocupan los 50mm
