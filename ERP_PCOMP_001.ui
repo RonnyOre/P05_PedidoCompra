@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>914</width>
-    <height>634</height>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -817,6 +817,9 @@ QTableWidget
         </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>120</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
         </attribute>
         <attribute name="verticalHeaderVisible">
          <bool>false</bool>

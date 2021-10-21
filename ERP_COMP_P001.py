@@ -96,13 +96,34 @@ class ERP_COMP_P001(QMainWindow):
             Año=str(now.year)
 
             if Fec_Inicial!='' and Fec_Final!='':
-                sqlCotComp="SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8' AND c.Fecha_Evalua_Oferta>='%s' AND c.Fecha_Evalua_Oferta<='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC"%(Cod_Soc,Año,Fec_Inicial,Fec_Final)
+                sqlCotComp='''SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido
+                FROM TAB_COMP_001_Cotización_Compra c
+                LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
+                LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
+                LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza
+                WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8' AND c.Fecha_Evalua_Oferta>='%s' AND c.Fecha_Evalua_Oferta<='%s'
+                GROUP BY c.Nro_Cotiza, c.Cod_Prov
+                ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC'''%(Cod_Soc,Año,Fec_Inicial,Fec_Final)
 
             elif Fec_Inicial!='' and Fec_Final=='':
-               sqlCotComp="SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8' AND c.Fecha_Evalua_Oferta>='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC"%(Cod_Soc,Año,Fec_Inicial)
+               sqlCotComp='''SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido
+               FROM TAB_COMP_001_Cotización_Compra c
+               LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
+               LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
+               LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza
+               WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8' AND c.Fecha_Evalua_Oferta>='%s'
+               GROUP BY c.Nro_Cotiza, c.Cod_Prov
+               ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC'''%(Cod_Soc,Año,Fec_Inicial)
 
             elif Fec_Inicial=='' and Fec_Final=='':
-               sqlCotComp="SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC"%(Cod_Soc,Año)
+               sqlCotComp='''SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido
+               FROM TAB_COMP_001_Cotización_Compra c
+               LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
+               LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
+               LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza
+               WHERE c.Cod_Soc='%s' AND c.Año='%s' AND c.Estado_Tipo='8'
+               GROUP BY c.Nro_Cotiza, c.Cod_Prov
+               ORDER BY c.Nro_Cotiza ASC, c.Fecha_Evalua_Oferta ASC, p.Razón_social ASC'''%(Cod_Soc,Año)
 
             CargarCotApro(self,self.tbwCot_Aprov_Ped_Comp,sqlCotComp)
 

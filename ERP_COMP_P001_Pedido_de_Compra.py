@@ -282,7 +282,10 @@ class Pedido_de_Compra(QMainWindow):
         sqlOrgComp="SELECT Nomb_Comp,Cod_Org_Comp FROM TAB_SOC_004_Org_Compra WHERE Cod_Soc='%s'"%(Cod_Soc)
         OrgComp=consultarSql(sqlOrgComp)
 
-        sqlCabPed="SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda FROM TAB_COMP_004_Pedido_Compra a LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda WHERE a.Cod_Emp='%s'AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s'"%(Cod_Soc,Cod_Prov,Nro_Cotiza)
+        sqlCabPed='''SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda
+        FROM TAB_COMP_004_Pedido_Compra a
+        LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+        WHERE a.Cod_Emp='%s'AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s';'''%(Cod_Soc,Cod_Prov,Nro_Cotiza)
         CabPed=convlist(sqlCabPed)
 
         insertarDatos(self.cbOrg_Compra, OrgComp)
