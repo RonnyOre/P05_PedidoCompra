@@ -226,6 +226,7 @@ class Consulta_PC(QMainWindow):
 
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            self.pc.pbEnviar.clicked.connect(self.Cargar)
             self.pc.showMaximized()
 
         except Exception as e:

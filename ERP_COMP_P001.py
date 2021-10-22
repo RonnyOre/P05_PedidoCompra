@@ -40,16 +40,16 @@ class ERP_COMP_P001(QMainWindow):
 
         global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
 
-        Cod_Soc='1000'
-        Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
-        Cod_Usuario='2021100004'
+        # Cod_Soc='1000'
+        # Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
+        # Cod_Usuario='2021100004'
 
-    # def datosGenerales(self, codSoc, empresa, usuario):
-    #
-    #     global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
-    #     Cod_Soc = codSoc
-    #     Nom_Soc = empresa
-    #     Cod_Usuario = usuario
+    def datosGenerales(self, codSoc, empresa, usuario):
+
+        global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
+        Cod_Soc = codSoc
+        Nom_Soc = empresa
+        Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)

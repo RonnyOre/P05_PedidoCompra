@@ -21,6 +21,7 @@ dicTip_Ped={'1':'Compra Nacional','2':'Importaciones','3':'Traslados entre Plant
 dicEstado={'1':'Proceso Emisión','2':'Enviado a Prov.','3':'Saldo Pendiente','4':'Recepcionada','9':'Eliminado'}
 
 sqlMoneda="SELECT Cod_moneda,Descrip_moneda FROM TAB_SOC_008_Monedas"
+sqlProv="SELECT a.Cod_prov, b.Nombre FROM TAB_PROV_001_Registro_de_Proveedores a LEFT JOIN TAB_SOC_009_Ubigeo b ON a.País=b.Cod_Pais WHERE b.Cod_Depart_Region='0' AND b.Cod_Provincia='0' AND b.Cod_Distrito='0' AND a.Estado_Prov='1'"
 
 class TextoCabecera(QDialog):
     def __init__(self,Nro_Ped):
@@ -205,11 +206,16 @@ class Pedido_de_Compra(QMainWindow):
         # self.pbImprimir.setEnabled(False)
         self.pbEnviar.setEnabled(False)
 
-        global dicMoneda
+        global dicMoneda,dicPaisProv
         moneda=consultarSql(sqlMoneda)
         dicMoneda={}
         for m in moneda:
             dicMoneda[m[0]]=m[1]
+
+        PaisProv=consultarSql(sqlProv)
+        dicPaisProv={}
+        for p in PaisProv:
+            dicPaisProv[p[0]]=p[1]
 
         self.pbDat_Import.clicked.connect(self.Dat_Imp)
         self.pbCon_Cab.clicked.connect(self.Cond_Cab)
@@ -332,21 +338,37 @@ class Pedido_de_Compra(QMainWindow):
             self.pbCon_Pos.setEnabled(True)
             self.pbGrabar.setEnabled(False)
 
-            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat FROM TAB_COMP_005_Detalle_Pedido_de_Compra a LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda LEFT JOIN TAB_SOC_002_Planta c ON a.Cod_Empresa=c.Cod_soc AND a.Cod_Planta=c.Cod_Planta LEFT JOIN TAB_SOC_003_Almacén d ON a.Cod_Empresa=d.Cod_Soc AND a.Cod_Planta=d.Cod_Planta AND a.Cod_Almacen=d.Cod_Alm WHERE a.Cod_Empresa='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s';'''%(Cod_Soc,CabPed[0], Año)
+            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
+            FROM TAB_COMP_005_Detalle_Pedido_de_Compra a
+            LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+            LEFT JOIN TAB_SOC_002_Planta c ON a.Cod_Empresa=c.Cod_soc AND a.Cod_Planta=c.Cod_Planta
+            LEFT JOIN TAB_SOC_003_Almacén d ON a.Cod_Empresa=d.Cod_Soc AND a.Cod_Planta=d.Cod_Planta AND a.Cod_Almacen=d.Cod_Alm
+            WHERE a.Cod_Empresa='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s';'''%(Cod_Soc,CabPed[0], Año)
             CargarPedComp(self,self.tbwPed_Comp,sqlTabla,Cod_Soc,Año,CabPed[0])
 
         else:
-            self.cbOrg_Compra.setCurrentIndex(-1)
+            self.cbOrg_Compra.setCurrentIndex(0)
 
             for v in dicTip_Ped.values():
                 self.cbTipo_Pedido.addItem(v)
 
-            self.cbTipo_Pedido.setCurrentIndex(-1)
+            if dicPaisProv[Cod_Prov]=='PERU':
+                self.cbTipo_Pedido.setCurrentIndex(0)
+            elif dicPaisProv[Cod_Prov]!='PERU':
+                self.cbTipo_Pedido.setCurrentIndex(1)
 
             fecha=formatearFecha(Fecha)
             self.leFecha_Pedido.setText(fecha)
 
-            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Mat, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm FROM TAB_COMP_002_Detalle_Cotización_de_Compra d LEFT JOIN TAB_COMP_001_Cotización_Compra a ON d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov LEFT JOIN TAB_MAT_001_Catalogo_Materiales c ON d.Cod_Mat = c.Cod_Mat LEFT JOIN TAB_SOLP_002_Detalle_Solicitud_Pedido s ON d.Año=s.Año AND d.Item_SOLP = s.Item_Solp AND d.Cod_Soc=s.Cod_Soc AND d.Cod_Mat=s.Cod_Mat AND s.Nro_Solp=a.Nro_Solp LEFT JOIN TAB_SOC_008_Monedas m ON s.Moneda=m.Cod_moneda LEFT JOIN TAB_SOC_002_Planta p ON s.Cod_Soc=p.Cod_soc AND s.Centro=p.Cod_Planta LEFT JOIN TAB_SOC_003_Almacén n ON s.Cod_Soc=n.Cod_Soc AND s.Centro=n.Cod_Planta AND s.Almacen=n.Cod_Alm WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' %(Cod_Soc, Año, Nro_Cotiza, Cod_Prov)
+            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm
+            FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
+            LEFT JOIN TAB_COMP_001_Cotización_Compra a ON d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov
+            LEFT JOIN TAB_MAT_011_Descripcion_Idiomas c ON d.Cod_Mat= c.Cod_Mat AND d.Cod_Idioma=c.Cod_Idioma
+            LEFT JOIN TAB_SOLP_002_Detalle_Solicitud_Pedido s ON d.Año=s.Año AND d.Item_SOLP = s.Item_Solp AND d.Cod_Soc=s.Cod_Soc AND d.Cod_Mat=s.Cod_Mat AND s.Nro_Solp=a.Nro_Solp
+            LEFT JOIN TAB_SOC_008_Monedas m ON s.Moneda=m.Cod_moneda
+            LEFT JOIN TAB_SOC_002_Planta p ON s.Cod_Soc=p.Cod_soc AND s.Centro=p.Cod_Planta
+            LEFT JOIN TAB_SOC_003_Almacén n ON s.Cod_Soc=n.Cod_Soc AND s.Centro=n.Cod_Planta AND s.Almacen=n.Cod_Alm
+            WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' %(Cod_Soc, Año, Nro_Cotiza, Cod_Prov)
             CargarPedComp(self,self.tbwPed_Comp,sqlTabla,Cod_Soc,Año,"")
 
     def Grabar(self):
