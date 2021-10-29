@@ -38,7 +38,7 @@ class ERP_COMP_P001(QMainWindow):
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-        global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
+        # global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
 
         # Cod_Soc='1000'
         # Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
