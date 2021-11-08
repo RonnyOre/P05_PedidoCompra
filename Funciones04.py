@@ -17,12 +17,21 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-url = 'https://www.multiplay.com.pe/consultas/consulta-prueba.php'
+#Eliminar despues de usar
+#####################################
+from funciones_4everybody import *
+#####################################
+
+#Descomentar cuando termine de probar
+#####################################
+# url = 'https://www.multiplay.com.pe/consultas/consulta-prueba.php'
+#####################################
 rutaBase=os.getcwd()
 
 #-------------------------------- Funciones Generales ----------------------------------
 
 def ejecutarSql(sql):
+    print(sql)
     datos = {'accion':'ejecutar','sql': sql}
     x = requests.post(url, data = datos)
     if x.text!="":
@@ -32,6 +41,18 @@ def ejecutarSql(sql):
     else:
         print("respuesta vacía")
     return respuesta
+
+def ejecutarSqlDB(sql, values):
+    try:
+        db.reconnect()
+        mycursor=db.cursor()
+        mycursor.executemany(sql, values)
+        db.commit()
+        db.close()
+        return {'respuesta':'correcto', 'resultado':str(len(values)) + " filas insertadas" }
+    except Exception as e:
+        print(e)
+        return {'respuesta':'incorrecto', 'resultado':e}
 
 def consultarSql(sql):
     datos = {'accion':'leer','sql': sql}
@@ -1353,6 +1374,7 @@ def CargarCotApro(self,tw,sql):
 def CargarPC(self,tw,sql,dicTipPed,dicEstado):
     tw.clearContents()
     informacion=consultarSql(sql)
+    print(informacion)
     if informacion!=[]:
         rows=tw.rowCount()
         for r in range(rows):
@@ -1384,6 +1406,7 @@ def CargarPC(self,tw,sql,dicTipPed,dicEstado):
 def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
     tw.clearContents()
     informacion=consultarSql(sql)
+    print(informacion)
     if informacion!=[]:
         rows=tw.rowCount()
         for r in range(rows):

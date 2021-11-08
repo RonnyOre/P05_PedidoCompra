@@ -38,18 +38,18 @@ class ERP_COMP_P001(QMainWindow):
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-        # global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
+        global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
 
-        # Cod_Soc='1000'
-        # Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
-        # Cod_Usuario='2021100004'
+        Cod_Soc='1000'
+        Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
+        Cod_Usuario='2021100004'
 
-    def datosGenerales(self, codSoc, empresa, usuario):
-
-        global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
-        Cod_Soc = codSoc
-        Nom_Soc = empresa
-        Cod_Usuario = usuario
+    # def datosGenerales(self, codSoc, empresa, usuario):
+    #
+    #     global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
+    #     Cod_Soc = codSoc
+    #     Nom_Soc = empresa
+    #     Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)
@@ -96,7 +96,7 @@ class ERP_COMP_P001(QMainWindow):
             Año=str(now.year)
 
             if Fec_Inicial!='' and Fec_Final!='':
-                sqlCotComp='''SELECT c.Nro_Cotiza,p.Razón_social,p.Nro_Telf,SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Fecha_Evalua_Oferta,c.Nro_Solp,c.Fecha_Doc,p.Representante,e.Estado_Pedido
+                sqlCotComp='''SELECT c.Nro_Cotiza, p.Razón_social, p.Nro_Telf, SUM(d.Cant_Asignada*d.Precio_Cotiza), c.Fecha_Evalua_Oferta, c.Nro_Solp, c.Fecha_Doc, p.Representante, e.Estado_Pedido
                 FROM TAB_COMP_001_Cotización_Compra c
                 LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
                 LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
