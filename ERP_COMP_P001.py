@@ -42,6 +42,8 @@ class ERP_COMP_P001(QMainWindow):
 
         Cod_Soc='1000'
         Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
+        # Cod_Soc='2000'
+        # Nom_Soc='MULTI PLAY TELECOMUNICACIONES S.A.C'
         Cod_Usuario='2021100004'
 
     # def datosGenerales(self, codSoc, empresa, usuario):

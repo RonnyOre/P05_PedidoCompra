@@ -211,31 +211,31 @@ class Consulta_PC(QMainWindow):
         self.leFinal.clear()
 
     def Pedido_Compra(self):
-        # try:
-        Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
-        Nro_Cotiza=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()
-        Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
-        for k,v in dicProv.items():
-            if Razon_Social==v:
-                Cod_Prov=k
+        try:
+            Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
+            Nro_Cotiza=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()
+            Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
+            for k,v in dicProv.items():
+                if Razon_Social==v:
+                    Cod_Prov=k
 
-        sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, Nro_Pedido)
-        dato=convlist(sql)
-        if dato!=[]:
-            Monto_Aprobado=dato[0]
-            Fecha_Req=dato[2]
-        else:
-            Monto_Aprobado=""
-            Fecha_Req=""
+            sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, Nro_Pedido)
+            dato=convlist(sql)
+            if dato!=[]:
+                Monto_Aprobado=dato[0]
+                Fecha_Req=dato[2]
+            else:
+                Monto_Aprobado=""
+                Fecha_Req=""
 
-        self.pc=Pedido_de_Compra()
-        self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
-        self.pc.pbEnviar.clicked.connect(self.Cargar)
-        self.pc.showMaximized()
+            self.pc=Pedido_de_Compra()
+            self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            self.pc.pbEnviar.clicked.connect(self.Cargar)
+            self.pc.showMaximized()
 
-        # except Exception as e:
-        #     mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
-        #     print(e)
+        except Exception as e:
+            mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
+            print(e)
 
     def Consultar(self):
         try:
