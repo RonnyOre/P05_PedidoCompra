@@ -38,20 +38,20 @@ class ERP_COMP_P001(QMainWindow):
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-        # global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
-        #
-        # Cod_Soc='1000'
-        # Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
-        # # Cod_Soc='2000'
-        # # Nom_Soc='MULTI PLAY TELECOMUNICACIONES S.A.C'
-        # Cod_Usuario='2021100004'
+        global Cod_Soc,Nom_Soc,Cod_Usuario,dicProv
 
-    def datosGenerales(self, codSoc, empresa, usuario):
+        Cod_Soc='1000'
+        Nom_Soc='MULTICABLE PERU SOCIEDAD ANONIMA CERRADA'
+        # Cod_Soc='2000'
+        # Nom_Soc='MULTI PLAY TELECOMUNICACIONES S.A.C'
+        Cod_Usuario='2021100004'
 
-        global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
-        Cod_Soc = codSoc
-        Nom_Soc = empresa
-        Cod_Usuario = usuario
+    # def datosGenerales(self, codSoc, empresa, usuario):
+    #
+    #     global Cod_Soc, Nom_Soc, Cod_Usuario,dicProv
+    #     Cod_Soc = codSoc
+    #     Nom_Soc = empresa
+    #     Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)
@@ -141,16 +141,31 @@ class ERP_COMP_P001(QMainWindow):
 
     def Pedido_Compra(self):
         try:
-            Nro_Cotiza=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text()
+            data=[]
+            data.append(Cod_Soc)
+            data.append(Nom_Soc)
+            data.append(Cod_Usuario)
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text())
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text())
             Razon_Social=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()
             for k,v in dicProv.items():
                 if Razon_Social==v:
                     Cod_Prov=k
-            Monto_Aprobado=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()
-            Fecha_Req=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()
+            data.append(Cod_Prov)
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text())
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text())
+
+            # Nro_Cotiza=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text()
+            # Razon_Social=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()
+            # for k,v in dicProv.items():
+            #     if Razon_Social==v:
+            #         Cod_Prov=k
+            # Monto_Aprobado=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()
+            # Fecha_Req=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()
 
             self.pc=Pedido_de_Compra()
-            self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            # self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            self.pc.datosCabecera(data)
             self.pc.pbGrabar.clicked.connect(self.Cargar)
             self.pc.showMaximized()
 

@@ -137,7 +137,13 @@ class Consulta_PC(QMainWindow):
 
     def Cargar(self):
         try:
-            sqlCotComp="SELECT a.Nro_Pedido, a.Nro_Cotiza, a.Nro_Solp, a.Tipo_Pedido, b.Razón_social, a.Fecha_Doc_Pedido, a.Estado_Pedido, GROUP_CONCAT(' ', c.Cod_Mat) FROM TAB_COMP_004_Pedido_Compra a LEFT JOIN TAB_PROV_001_Registro_de_Proveedores b ON a.Cod_Prov=b.Cod_prov LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra c ON a.Cod_Emp=c.Cod_Empresa AND a.Año_Pedido=c.Año_Pedido AND a.Nro_Pedido=c.Nro_Pedido WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s' GROUP BY a.Nro_Pedido ORDER BY a.Fecha_Doc_Pedido ASC" %(Cod_Soc,Año)
+            sqlCotComp='''SELECT a.Nro_Pedido, a.Nro_Cotiza, a.Nro_Solp, a.Tipo_Pedido, b.Razón_social, a.Fecha_Doc_Pedido, a.Estado_Pedido, GROUP_CONCAT(' ', c.Cod_Mat)
+            FROM TAB_COMP_004_Pedido_Compra a
+            LEFT JOIN TAB_PROV_001_Registro_de_Proveedores b ON a.Cod_Prov=b.Cod_prov
+            LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra c ON a.Cod_Emp=c.Cod_Empresa AND a.Año_Pedido=c.Año_Pedido AND a.Nro_Pedido=c.Nro_Pedido
+            WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s'
+            GROUP BY a.Nro_Pedido
+            ORDER BY a.Fecha_Doc_Pedido ASC;'''%(Cod_Soc,Año)
 
             CargarPC(self,self.tbwPedido_Compra,sqlCotComp,dicTipPed,dicEstado)
 
@@ -212,14 +218,34 @@ class Consulta_PC(QMainWindow):
 
     def Pedido_Compra(self):
         try:
-            Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
-            Nro_Cotiza=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()
+            data=[]
+            data.append(Cod_Soc)
+            data.append(Nom_Soc)
+            data.append(Cod_Usuario)
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text())
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text())
             Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
             for k,v in dicProv.items():
                 if Razon_Social==v:
                     Cod_Prov=k
+            data.append(Cod_Prov)
 
-            sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, Nro_Pedido)
+
+            Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
+            # Nro_Cotiza=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()
+            # Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
+            # for k,v in dicProv.items():
+            #     if Razon_Social==v:
+            #         Cod_Prov=k
+
+            sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc
+            FROM TAB_COMP_001_Cotización_Compra c
+            LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
+            LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
+            LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza
+            WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s'
+            GROUP BY c.Nro_Cotiza, c.Cod_Prov
+            ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, Nro_Pedido)
             dato=convlist(sql)
             if dato!=[]:
                 Monto_Aprobado=dato[0]
@@ -228,8 +254,12 @@ class Consulta_PC(QMainWindow):
                 Monto_Aprobado=""
                 Fecha_Req=""
 
+            data.append(Monto_Aprobado)
+            data.append(Fecha_Req)
+
             self.pc=Pedido_de_Compra()
-            self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            # self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
+            self.pc.datosCabecera(data)
             self.pc.pbEnviar.clicked.connect(self.Cargar)
             self.pc.showMaximized()
 
@@ -251,7 +281,14 @@ class Consulta_PC(QMainWindow):
                 data.append(item)
                 i+=1
 
-            sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc FROM TAB_COMP_001_Cotización_Compra c LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s' GROUP BY c.Nro_Cotiza, c.Cod_Prov ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, data[0])
+            sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc
+            FROM TAB_COMP_001_Cotización_Compra c
+            LEFT JOIN TAB_COMP_002_Detalle_Cotización_de_Compra d ON c.Cod_Soc=d.Cod_Soc AND c.Año=d.Año AND c.Nro_Cotiza=d.Nro_Cotiza AND c.Cod_Prov=d.Cod_Prov
+            LEFT JOIN TAB_PROV_001_Registro_de_Proveedores p ON c.Cod_Prov = p.Cod_prov
+            LEFT JOIN TAB_COMP_004_Pedido_Compra e ON c.Cod_Soc=e.Cod_Emp AND c.Cod_Prov=e.Cod_Prov AND c.Nro_Cotiza=e.Nro_Cotiza
+            WHERE c.Cod_Soc='%s' AND c.Año='%s' AND e.Nro_Pedido='%s'
+            GROUP BY c.Nro_Cotiza, c.Cod_Prov
+            ORDER BY c.Fecha_Evalua_Oferta ASC;'''%(Cod_Soc, Año, data[0])
             dato=convlist(sql)
 
             nro_cotiza = data[1]

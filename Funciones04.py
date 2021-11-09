@@ -214,6 +214,8 @@ def buscarTablaTbw(tbw, texto, columnas):
 def formatearFecha(fecha):
     if fecha=="":
         return ""
+    if fecha==None:
+        return ""
     fecha=fecha.split("-")
     fecha.reverse()
     return "-".join(fecha)
