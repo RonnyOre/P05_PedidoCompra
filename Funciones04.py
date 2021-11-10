@@ -222,6 +222,10 @@ def formatearFecha(fecha):
 
 def formatearDecimal(str, nro):
     try:
+        if str=="":
+            return ""
+        if str==None:
+            return ""
         decimal = float(str)
         decimalRound = round(decimal,int(nro))
         cantDecimales = "{:,." + nro + "f}"
