@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 from Funciones04 import*
-from PyQt5 import uic, QtCore
+from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtWidgets import*
 from PyQt5.QtGui import*
 import urllib.request
@@ -13,6 +13,17 @@ class Continuacion(QMainWindow):
 
         self.pbGrabar.clicked.connect(self.Grabar)
         self.pbSalir.clicked.connect(self.Salir)
+        self.deFecha_Desaduanaje.dateChanged.connect(self.Fecha_Desaduanaje)
+        self.deFecha_Ingreso_Alm_Aduana.dateChanged.connect(self.Fecha_Ingreso_Alm_Aduana)
+        self.deFecha_Salida_Alm_Aduana.dateChanged.connect(self.Fecha_Salida_Alm_Aduana)
+        self.deFecha_Alm_Propio.dateChanged.connect(self.Fecha_Alm_Propio)
+
+        self.leFecha_Desaduanaje.setReadOnly(True)
+        self.leFecha_Ingreso_Alm_Aduana.setReadOnly(True)
+        self.leFecha_Salida_Alm_Aduana.setReadOnly(True)
+        self.leFecha_Alm_Propio.setReadOnly(True)
+
+        self.validarHora()
 
     def datosCabecera(self,codsoc,nomsoc,codusuario,nropedido):
 
@@ -53,10 +64,6 @@ class Continuacion(QMainWindow):
             self.leAjuste_Valor.setText(formatearDecimal(DatImp[18],'3'))
             self.leValor_Aduana.setText(formatearDecimal(DatImp[19],'3'))
 
-            self.leFecha_Desaduanaje.setReadOnly(True)
-            self.leFecha_Ingreso_Alm_Aduana.setReadOnly(True)
-            self.leFecha_Salida_Alm_Aduana.setReadOnly(True)
-            self.leFecha_Alm_Propio.setReadOnly(True)
             self.leHora.setReadOnly(True)
             self.leEmpresa_Transporte.setReadOnly(True)
             self.leNombre_Chofer.setReadOnly(True)
@@ -75,6 +82,28 @@ class Continuacion(QMainWindow):
             self.leValor_Aduana.setReadOnly(True)
 
             self.pbGrabar.setEnabled(False)
+
+    def validarHora(self):
+        # reg_ex = QRegExp("^(?:0?[1-9]|1[0-2]):[0-5][0-9]\s?(?:[AaPp](\.?)[Mm]\1)?$") ## Formato 12 horas
+        reg_ex = QRegExp("^(?:0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\s?$") ## Formato 24 horas
+        input_validator = QRegExpValidator(reg_ex, self.leHora)
+        self.leHora.setValidator(input_validator)
+
+    def Fecha_Desaduanaje(self):
+        Fec_Final=QDateToStrView(self.deFecha_Desaduanaje)
+        self.leFecha_Desaduanaje.setText(Fec_Final)
+
+    def Fecha_Ingreso_Alm_Aduana(self):
+        Fec_Final=QDateToStrView(self.deFecha_Ingreso_Alm_Aduana)
+        self.leFecha_Ingreso_Alm_Aduana.setText(Fec_Final)
+
+    def Fecha_Salida_Alm_Aduana(self):
+        Fec_Final=QDateToStrView(self.deFecha_Salida_Alm_Aduana)
+        self.leFecha_Salida_Alm_Aduana.setText(Fec_Final)
+
+    def Fecha_Alm_Propio(self):
+        Fec_Final=QDateToStrView(self.deFecha_Alm_Propio)
+        self.leFecha_Alm_Propio.setText(Fec_Final)
 
     def Grabar(self):
 
@@ -113,10 +142,10 @@ class Continuacion(QMainWindow):
             mensajeDialogo("informacion", "Información", "Datos de importación grabados correctamente")
             self.pbGrabar.setEnabled(False)
 
-            self.leFecha_Desaduanaje.setReadOnly(True)
-            self.leFecha_Ingreso_Alm_Aduana.setReadOnly(True)
-            self.leFecha_Salida_Alm_Aduana.setReadOnly(True)
-            self.leFecha_Alm_Propio.setReadOnly(True)
+            self.deFecha_Desaduanaje.setReadOnly(True)
+            self.deFecha_Ingreso_Alm_Aduana.setReadOnly(True)
+            self.deFecha_Salida_Alm_Aduana.setReadOnly(True)
+            self.deFecha_Alm_Propio.setReadOnly(True)
             self.leHora.setReadOnly(True)
             self.leEmpresa_Transporte.setReadOnly(True)
             self.leNombre_Chofer.setReadOnly(True)

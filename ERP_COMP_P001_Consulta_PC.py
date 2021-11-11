@@ -230,13 +230,7 @@ class Consulta_PC(QMainWindow):
                     Cod_Prov=k
             data.append(Cod_Prov)
 
-
             Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
-            # Nro_Cotiza=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()
-            # Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
-            # for k,v in dicProv.items():
-            #     if Razon_Social==v:
-            #         Cod_Prov=k
 
             sql='''SELECT SUM(d.Cant_Asignada*d.Precio_Cotiza),c.Nro_Solp,c.Fecha_Doc
             FROM TAB_COMP_001_Cotización_Compra c
@@ -258,7 +252,6 @@ class Consulta_PC(QMainWindow):
             data.append(Fecha_Req)
 
             self.pc=Pedido_de_Compra()
-            # self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
             self.pc.datosCabecera(data)
             self.pc.pbEnviar.clicked.connect(self.Cargar)
             self.pc.showMaximized()

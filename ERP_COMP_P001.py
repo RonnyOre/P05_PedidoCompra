@@ -26,7 +26,6 @@ class ERP_COMP_P001(QMainWindow):
         uic.loadUi("ERP_PCOMP_005.ui",self)
 
         self.pbEmitir.clicked.connect(self.Pedido_Compra)
-        # self.tbwCot_Aprov_Ped_Comp.cellDoubleClicked.connect(self.Pedido_Compra)
         self.pbCargar.clicked.connect(self.Cargar)
         self.pbPed_Comp.clicked.connect(self.Consulta_PedComp)
         self.pbNuevo.clicked.connect(self.Limpiar)
@@ -155,16 +154,7 @@ class ERP_COMP_P001(QMainWindow):
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text())
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text())
 
-            # Nro_Cotiza=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text()
-            # Razon_Social=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()
-            # for k,v in dicProv.items():
-            #     if Razon_Social==v:
-            #         Cod_Prov=k
-            # Monto_Aprobado=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()
-            # Fecha_Req=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()
-
             self.pc=Pedido_de_Compra()
-            # self.pc.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req)
             self.pc.datosCabecera(data)
             self.pc.pbGrabar.clicked.connect(self.Cargar)
             self.pc.showMaximized()
@@ -378,11 +368,7 @@ class ERP_COMP_P001(QMainWindow):
 
             root = tk.Tk()
             root.withdraw()
-            # ruta = filedialog.asksaveasfilename(initialfile = 'Cotizaciones aprobadas_' + Fecha +'_'+ Hora, defaultextension=".pdf", filetypes=(("Documento PDF", "*.pdf"),))
-            # if ruta != "":
-            #     pdf.output(ruta, 'F')
-            #     mensajeDialogo("informacion", "Información", "Reporte PDF Generado con éxito")
-
+            
             ruta_Carpeta=crearCarpeta("COTIZACIONES APROBADAS")
             ruta_Pdf=ruta_Carpeta+'Cotizaciones Aprobadas_' + Fecha.replace("-","") + Hora.replace(":","") + '.pdf'
             print(ruta_Pdf)

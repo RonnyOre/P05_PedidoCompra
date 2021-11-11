@@ -8,9 +8,7 @@ from Pedido_de_Compra_Datos_Importacion_Continuacion import Continuacion
 import urllib.request
 
 sqlProvAdu="SELECT Razón_social,Cod_prov FROM TAB_PROV_001_Registro_de_Proveedores WHERE Tip_Prov='5'"
-
 sqlPais="SELECT Nombre, Cod_Pais FROM TAB_SOC_009_Ubigeo WHERE Cod_Depart_Region='0' AND Cod_Provincia='0' AND Cod_Distrito='0'"
-
 sqlMoneda="SELECT Descrip_moneda,Cod_moneda FROM TAB_SOC_008_Monedas"
 
 # sqlProvTra="SELECT Razón_social,Cod_prov FROM TAB_PROV_001_Registro_de_Proveedores WHERE Tip_Prov='4'"
@@ -52,7 +50,6 @@ class TextoEnvio(QDialog):
                 self.pbGrabar.setEnabled(False)
             except Exception as e:
             	print(e)
-
 
     def Grabar(self):
         global texto_envio
@@ -110,6 +107,10 @@ class Datos_Importacion(QMainWindow):
         self.pbSalir.clicked.connect(self.Salir)
         self.pbContinuar.clicked.connect(self.Continuar)
         self.pbTexto_Envio.clicked.connect(self.TextoEnvio)
+        self.deFecha_Solicitud.dateChanged.connect(self.Fecha_Solicitud)
+        self.deFecha_Inicio.dateChanged.connect(self.Fecha_Inicio)
+        self.deFecha_Embarque.dateChanged.connect(self.Fecha_Embarque)
+        self.deFecha_Puerto_Callao.dateChanged.connect(self.Fecha_Puerto_Callao)
 
         ProvAdu=consultarSql(sqlProvAdu)
         dicProvAdu={}
@@ -133,6 +134,10 @@ class Datos_Importacion(QMainWindow):
         insertarDatos(self.cbPais_Origen,Pais)
         self.cbPais_Origen.setCurrentIndex(-1)
 
+        self.leFecha_Solicitud.setReadOnly(True)
+        self.leFecha_Inicio.setReadOnly(True)
+        self.leFecha_Embarque.setReadOnly(True)
+        self.leFecha_Puerto_Callao.setReadOnly(True)
 
     def datosCabecera(self,codsoc,codusuario,nrocotiza,razonsocial,codprov,nropedido,descrip_tipo_pedido,nomsoc,orgcomp,estadopedido):
 
@@ -200,30 +205,35 @@ class Datos_Importacion(QMainWindow):
 
             self.cbAgente_Aduanas.setEnabled(False)
             self.leNro_Servicio.setReadOnly(True)
-            self.leFecha_Solicitud.setReadOnly(True)
             self.leNro_Doc_Aduanas.setReadOnly(True)
-            self.leFecha_Inicio.setReadOnly(True)
             self.cbPais_Origen.setEnabled(False)
             self.cbMoneda.setEnabled(False)
             self.leVia_Embarque.setReadOnly(True)
             self.lePuerto_Embarque.setReadOnly(True)
-            self.leFecha_Embarque.setReadOnly(True)
             self.leNro_Embarque.setReadOnly(True)
             self.leIncoterms_1.setReadOnly(True)
             self.leIncoterms_2.setReadOnly(True)
             self.leContenedor.setReadOnly(True)
-            self.leFecha_Puerto_Callao.setReadOnly(True)
             self.leNro_Manifiesto.setReadOnly(True)
             self.leRUC_Declarante.setReadOnly(True)
             self.lePorc_Deposito.setReadOnly(True)
             self.leTiempo_Envio.setReadOnly(True)
 
+    def Fecha_Solicitud(self):
+        Fec_Final=QDateToStrView(self.deFecha_Solicitud)
+        self.leFecha_Solicitud.setText(Fec_Final)
 
-    def Continuar(self):
-        self.co=Continuacion()
-        self.co.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido)
-        self.co.pbGrabar.clicked.connect(self.Grabar2)
-        self.co.showMaximized()
+    def Fecha_Inicio(self):
+        Fec_Final=QDateToStrView(self.deFecha_Inicio)
+        self.leFecha_Inicio.setText(Fec_Final)
+
+    def Fecha_Embarque(self):
+        Fec_Final=QDateToStrView(self.deFecha_Embarque)
+        self.leFecha_Embarque.setText(Fec_Final)
+
+    def Fecha_Puerto_Callao(self):
+        Fec_Final=QDateToStrView(self.deFecha_Puerto_Callao)
+        self.leFecha_Puerto_Callao.setText(Fec_Final)
 
     def Grabar2(self):
 
@@ -293,19 +303,19 @@ class Datos_Importacion(QMainWindow):
             # mensajeDialogo("informacion", "Información", "Registro guardado")
             self.cbAgente_Aduanas.setEnabled(False)
             self.leNro_Servicio.setReadOnly(True)
-            self.leFecha_Solicitud.setReadOnly(True)
+            self.deFecha_Solicitud.setReadOnly(True)
             self.leNro_Doc_Aduanas.setReadOnly(True)
-            self.leFecha_Inicio.setReadOnly(True)
+            self.deFecha_Inicio.setReadOnly(True)
             self.cbPais_Origen.setEnabled(False)
             self.cbMoneda.setEnabled(False)
             self.leVia_Embarque.setReadOnly(True)
             self.lePuerto_Embarque.setReadOnly(True)
-            self.leFecha_Embarque.setReadOnly(True)
+            self.deFecha_Embarque.setReadOnly(True)
             self.leNro_Embarque.setReadOnly(True)
             self.leIncoterms_1.setReadOnly(True)
             self.leIncoterms_2.setReadOnly(True)
             self.leContenedor.setReadOnly(True)
-            self.leFecha_Puerto_Callao.setReadOnly(True)
+            self.deFecha_Puerto_Callao.setReadOnly(True)
             self.leNro_Manifiesto.setReadOnly(True)
             self.leRUC_Declarante.setReadOnly(True)
             self.lePorc_Deposito.setReadOnly(True)
@@ -315,6 +325,11 @@ class Datos_Importacion(QMainWindow):
             print("")
             # mensajeDialogo("error", "Error", "Ingrese Datos Válido")
 
+    def Continuar(self):
+        self.co=Continuacion()
+        self.co.datosCabecera(Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Pedido)
+        self.co.pbGrabar.clicked.connect(self.Grabar2)
+        self.co.showMaximized()
 
     def TextoEnvio(self):
         try:

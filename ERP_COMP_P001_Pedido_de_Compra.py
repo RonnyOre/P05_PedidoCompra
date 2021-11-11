@@ -571,196 +571,195 @@ class Pedido_de_Compra(QMainWindow):
         sqlTexCab="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(Data[0],Año,Nro_Pedido)
         TexCab=convlist(sqlTexCab)
 
-        # try:
-        list_item = []
-        list_descripcion = []
-        list_unid = []
-        list_cantidad = []
-        list_precio = []
-        list_total = []
-        list_moneda = []
+        try:
+            list_item = []
+            list_descripcion = []
+            list_unid = []
+            list_cantidad = []
+            list_precio = []
+            list_total = []
+            list_moneda = []
 
+            for i in range(self.tbwPed_Comp.rowCount()):
+                try:
+                    list_item.append(self.tbwPed_Comp.item(i,0).text())
+                except:
+                    list_item.append("")
+                try:
+                    list_descripcion.append(self.tbwPed_Comp.item(i,2).text())
+                except:
+                    list_descripcion.append("")
+                try:
+                    list_unid.append(self.tbwPed_Comp.item(i,3).text())
+                except:
+                    list_unid.append("")
+                try:
+                    list_cantidad.append(self.tbwPed_Comp.item(i,4).text())
+                except:
+                    list_cantidad.append("")
+                try:
+                    list_precio.append(self.tbwPed_Comp.item(i,5).text())
+                except:
+                    list_precio.append("")
+                try:
+                    list_total.append(self.tbwPed_Comp.item(i,6).text())
+                except:
+                    list_total.append("")
 
-        for i in range(self.tbwPed_Comp.rowCount()):
-            try:
-                list_item.append(self.tbwPed_Comp.item(i,0).text())
-            except:
-                list_item.append("")
-            try:
-                list_descripcion.append(self.tbwPed_Comp.item(i,2).text())
-            except:
-                list_descripcion.append("")
-            try:
-                list_unid.append(self.tbwPed_Comp.item(i,3).text())
-            except:
-                list_unid.append("")
-            try:
-                list_cantidad.append(self.tbwPed_Comp.item(i,4).text())
-            except:
-                list_cantidad.append("")
-            try:
-                list_precio.append(self.tbwPed_Comp.item(i,5).text())
-            except:
-                list_precio.append("")
-            try:
-                list_total.append(self.tbwPed_Comp.item(i,6).text())
-            except:
-                list_total.append("")
+            print("LISTA 1: ",list_item)
+            print("LISTA 2: ",list_descripcion)
+            print("LISTA 3: ",list_unid)
+            print("LISTA 4: ",list_cantidad)
+            print("LISTA 5: ",list_precio)
+            print("LISTA 6: ",list_total)
 
-        print("LISTA 1: ",list_item)
-        print("LISTA 2: ",list_descripcion)
-        print("LISTA 3: ",list_unid)
-        print("LISTA 4: ",list_cantidad)
-        print("LISTA 5: ",list_precio)
-        print("LISTA 6: ",list_total)
+            df = pd.DataFrame()
+            df['1'] = list_item
+            df['2'] = list_descripcion
+            df['3'] = list_unid
+            df['4'] = list_cantidad
+            df['5'] = list_precio
+            df['6'] = list_total
 
-        df = pd.DataFrame()
-        df['1'] = list_item
-        df['2'] = list_descripcion
-        df['3'] = list_unid
-        df['4'] = list_cantidad
-        df['5'] = list_precio
-        df['6'] = list_total
+            title = 'PEDIDO DE COMPRA NRO. : ' + Nro_Pedido
 
-        title = 'PEDIDO DE COMPRA NRO. : ' + Nro_Pedido
+            class PDF(FPDF):
+                def header(self):
+                    self.image('Logos/LogoMp_st.png', 20, 10, 55)
+                    self.image('Logos/Logo'+ Data[0] +'.png', 222, 10, 55)
+                    self.set_font('Arial', 'B', 13)
+                    ## Posición del título en el centro
+                    w = self.get_string_width(title) + 6
+                    self.set_xy((297 - w) / 2, 20)
+                    self.set_text_color(0, 0, 0)
+                    self.cell(w, 9, title, 0, 1, 'C')
+                    ## espacio vertical
+                    self.ln(5)
+                    ## espacio horizontal
+                    self.cell(10)
+                    ## Texto Encabezado
+                    self.set_font('Arial', 'B', 10)
+                    self.set_text_color(0, 0, 0)
+                    ## Primera Fila Encabezado
+                    self.cell(40, 8, "Ref. Cotización : ", 0, 0,'L')
+                    self.cell(30, 8, Data[3], 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Fecha Req. : ", 0, 0,'L')
+                    self.cell(30, 8, formatearFecha(Data[7]), 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Fecha Entrega : ", 0, 0,'L')
+                    self.cell(37, 8, formatearFecha(FechaEntrega[0]), 0, 2,'C')
+                    ## Segunda Fila Encabezado
+                    self.cell(-220)
+                    self.cell(40, 8, "Proveedor : ", 0, 0,'L')
+                    self.cell(130, 8, Data[4], 0, 0,'L')
+                    self.cell(20)
+                    self.cell(30, 8, "Validez Oferta : ", 0, 0,'L')
+                    self.cell(37, 8, formatearFecha(DatosCab[12]), 0, 2,'C')
+                    ## Tercera Fila Encabezado
+                    self.cell(-220)
+                    self.cell(40, 8, "Forma Pago : ", 0, 0,'L')
+                    if DatosCab[3]==None:
+                        DatosCab[3]=""
+                    self.cell(30, 8, DatosCab[3], 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Cuotas : ", 0, 0,'L')
+                    self.cell(30, 8, DatosCab[4], 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Monto Depósito : ", 0, 0,'L')
+                    self.cell(37, 8, formatearDecimal(Data[6],'2'), 0, 2,'C')
+                    ## Cuarta Fila Encabezado
+                    self.cell(-220)
+                    self.cell(40, 8, "Forma de Envío : ", 0, 0,'L')
+                    if DatosCab[11]==None:
+                        DatosCab[11]=""
+                    self.cell(30, 8, DatosCab[11], 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Moneda : ", 0, 0,'L')
+                    self.cell(30, 8, DatosCab[0], 0, 0,'C')
+                    self.cell(30)
+                    self.cell(30, 8, "Garantía : ", 0, 0,'L')
+                    self.cell(37, 8, DatosCab[9]+' '+DatosCab[10], 0, 2,'C')
+                    ## Quinta Fila Encabezado
+                    self.cell(-220)
+                    self.cell(40, 8, "Banco : ", 0, 0,'L')
+                    if DatosCab[7]==None:
+                        DatosCab[7]=""
+                    self.cell(30, 8, DatosCab[7], 0, 0,'L')
+                    self.cell(30)
+                    self.cell(30, 8, "Cuenta : ", 0, 0,'L')
+                    self.cell(30, 8, DatosCab[8], 0, 0,'C')
+                    self.cell(30)
+                    ## espacio vertical
+                    self.ln(10)
 
-        class PDF(FPDF):
-            def header(self):
-                self.image('Logos/LogoMp_st.png', 20, 10, 55)
-                self.image('Logos/Logo'+ Data[0] +'.png', 222, 10, 55)
-                self.set_font('Arial', 'B', 13)
-                ## Posición del título en el centro
-                w = self.get_string_width(title) + 6
-                self.set_xy((297 - w) / 2, 20)
-                self.set_text_color(0, 0, 0)
-                self.cell(w, 9, title, 0, 1, 'C')
-                ## espacio vertical
-                self.ln(5)
-                ## espacio horizontal
-                self.cell(10)
-                ## Texto Encabezado
-                self.set_font('Arial', 'B', 10)
-                self.set_text_color(0, 0, 0)
-                ## Primera Fila Encabezado
-                self.cell(40, 8, "Ref. Cotización : ", 0, 0,'L')
-                self.cell(30, 8, Data[3], 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Fecha Req. : ", 0, 0,'L')
-                self.cell(30, 8, formatearFecha(Data[7]), 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Fecha Entrega : ", 0, 0,'L')
-                self.cell(37, 8, formatearFecha(FechaEntrega[0]), 0, 2,'C')
-                ## Segunda Fila Encabezado
-                self.cell(-220)
-                self.cell(40, 8, "Proveedor : ", 0, 0,'L')
-                self.cell(130, 8, Data[4], 0, 0,'L')
-                self.cell(20)
-                self.cell(30, 8, "Validez Oferta : ", 0, 0,'L')
-                self.cell(37, 8, formatearFecha(DatosCab[12]), 0, 2,'C')
-                ## Tercera Fila Encabezado
-                self.cell(-220)
-                self.cell(40, 8, "Forma Pago : ", 0, 0,'L')
-                if DatosCab[3]==None:
-                    DatosCab[3]=""
-                self.cell(30, 8, DatosCab[3], 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Cuotas : ", 0, 0,'L')
-                self.cell(30, 8, DatosCab[4], 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Monto Depósito : ", 0, 0,'L')
-                self.cell(37, 8, formatearDecimal(Data[6],'2'), 0, 2,'C')
-                ## Cuarta Fila Encabezado
-                self.cell(-220)
-                self.cell(40, 8, "Forma de Envío : ", 0, 0,'L')
-                if DatosCab[11]==None:
-                    DatosCab[11]=""
-                self.cell(30, 8, DatosCab[11], 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Moneda : ", 0, 0,'L')
-                self.cell(30, 8, DatosCab[0], 0, 0,'C')
-                self.cell(30)
-                self.cell(30, 8, "Garantía : ", 0, 0,'L')
-                self.cell(37, 8, DatosCab[9]+' '+DatosCab[10], 0, 2,'C')
-                ## Quinta Fila Encabezado
-                self.cell(-220)
-                self.cell(40, 8, "Banco : ", 0, 0,'L')
-                if DatosCab[7]==None:
-                    DatosCab[7]=""
-                self.cell(30, 8, DatosCab[7], 0, 0,'L')
-                self.cell(30)
-                self.cell(30, 8, "Cuenta : ", 0, 0,'L')
-                self.cell(30, 8, DatosCab[8], 0, 0,'C')
-                self.cell(30)
-                ## espacio vertical
-                self.ln(10)
+                def footer(self):
+                    ## Position at 1.5 cm from bottom
+                    self.set_y(-15)
+                    self.set_font('Arial', 'I', 8)
+                    self.set_text_color(128)
+                    ## Número de Página
+                    self.cell(0, 10, 'Página ' + str(self.page_no()), 0, 0, 'C')
 
-            def footer(self):
-                ## Position at 1.5 cm from bottom
-                self.set_y(-15)
-                self.set_font('Arial', 'I', 8)
-                self.set_text_color(128)
-                ## Número de Página
-                self.cell(0, 10, 'Página ' + str(self.page_no()), 0, 0, 'C')
-
-        # pdf = PDF('P', 'mm', (210, 297))
-        pdf = PDF('L')
-        pdf.add_page()
-        pdf.set_xy(0,0)
-        pdf.set_font('arial', 'B', 9)
-        # pdf.set_auto_page_break(True, 0.5)
-        # pdf.cell(75, 10, " ", 0, 2, 'C')
-        pdf.ln(80)
-        pdf.set_fill_color(255, 213, 79)
-        pdf.cell(10, 10, 'Item', 1, 0, 'C', 1)
-        pdf.cell(187, 10, 'Material', 1, 0, 'C', 1)
-        pdf.cell(10, 10, 'UB', 1, 0, 'C', 1)
-        pdf.cell(20, 10, 'Cantidad', 1, 0, 'C', 1)
-        pdf.cell(25, 10, 'Precio', 1, 0, 'C', 1)
-        pdf.cell(25, 10, 'Total', 1, 2, 'C', 1)
-        pdf.cell(-252)
-        pdf.set_font('arial', '', 9)
-        for i in range(0, len(df)):
-            pdf.cell(10, 8, '%s' % (df['1'].iloc[i]), 1, 0, 'C')
-            pdf.cell(187, 8, '%s' % (df['2'].iloc[i]), 1, 0, 'C')
-            pdf.cell(10, 8, '%s' % (df['3'].iloc[i]), 1, 0, 'C')
-            pdf.cell(20, 8, '%s' % (df['4'].iloc[i]), 1, 0, 'C')
-            pdf.cell(25, 8, '%s' % (df['5'].iloc[i]), 1, 0, 'C')
-            pdf.cell(25, 8, '%s' % (df['6'].iloc[i]), 1, 2, 'C')
-
+            # pdf = PDF('P', 'mm', (210, 297))
+            pdf = PDF('L')
+            pdf.add_page()
+            pdf.set_xy(0,0)
+            pdf.set_font('arial', 'B', 9)
+            # pdf.set_auto_page_break(True, 0.5)
+            # pdf.cell(75, 10, " ", 0, 2, 'C')
+            pdf.ln(80)
+            pdf.set_fill_color(255, 213, 79)
+            pdf.cell(10, 10, 'Item', 1, 0, 'C', 1)
+            pdf.cell(187, 10, 'Material', 1, 0, 'C', 1)
+            pdf.cell(10, 10, 'UB', 1, 0, 'C', 1)
+            pdf.cell(20, 10, 'Cantidad', 1, 0, 'C', 1)
+            pdf.cell(25, 10, 'Precio', 1, 0, 'C', 1)
+            pdf.cell(25, 10, 'Total', 1, 2, 'C', 1)
             pdf.cell(-252)
+            pdf.set_font('arial', '', 9)
+            for i in range(0, len(df)):
+                pdf.cell(10, 8, '%s' % (df['1'].iloc[i]), 1, 0, 'C')
+                pdf.cell(187, 8, '%s' % (df['2'].iloc[i]), 1, 0, 'C')
+                pdf.cell(10, 8, '%s' % (df['3'].iloc[i]), 1, 0, 'C')
+                pdf.cell(20, 8, '%s' % (df['4'].iloc[i]), 1, 0, 'C')
+                pdf.cell(25, 8, '%s' % (df['5'].iloc[i]), 1, 0, 'C')
+                pdf.cell(25, 8, '%s' % (df['6'].iloc[i]), 1, 2, 'C')
 
-        # pdf.ln(60)
-        pdf.ln(10)
-        if TexCab==[]:
-            pdf.ln(50)
-        else:
+                pdf.cell(-252)
+
+            # pdf.ln(60)
+            pdf.ln(10)
+            if TexCab==[]:
+                pdf.ln(50)
+            else:
+                pdf.set_font('Arial', 'B', 9)
+                pdf.cell(27, 8, "Observaciones: ", 0, 0,'L')
+                pdf.set_font('Arial', '', 9)
+                # pdf.cell(25, 8, "", 0, 0,'L')
+                pdf.cell(250, 8, TexCab[0], 0, 2,'L')
+                pdf.ln(35)
             pdf.set_font('Arial', 'B', 9)
-            pdf.cell(27, 8, "Observaciones: ", 0, 0,'L')
-            pdf.set_font('Arial', '', 9)
-            # pdf.cell(25, 8, "", 0, 0,'L')
-            pdf.cell(250, 8, TexCab[0], 0, 2,'L')
-            pdf.ln(35)
-        pdf.set_font('Arial', 'B', 9)
-        pdf.set_text_color(0, 0, 0)
-        pdf.cell(277, 5, '----------------------------------------------', 0, 2, 'C') # los guiones ocupan los 50mm
-        pdf.cell(277, 5, 'Firma', 0, 2, 'C')
-        pdf.cell(277, 5, 'Jefe de Ventas', 0, 0, 'C')
-        root = tk.Tk()
-        root.withdraw()
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(277, 5, '----------------------------------------------', 0, 2, 'C') # los guiones ocupan los 50mm
+            pdf.cell(277, 5, 'Firma', 0, 2, 'C')
+            pdf.cell(277, 5, 'Jefe de Ventas', 0, 0, 'C')
+            root = tk.Tk()
+            root.withdraw()
 
-        ruta_Carpeta=crearCarpeta("PEDIDOS DE COMPRA")
-        ruta_Pdf=ruta_Carpeta+'Pedido de Compra ' + Nro_Pedido + '.pdf'
-        print(ruta_Pdf)
-        if ruta_Pdf !="":
-            pdf.output(ruta_Pdf, 'F')
-            self.pbEnviar.setEnabled(True)
-            reply = mensajeDialogo("pregunta", "Pregunta","Reporte PDF Generado con éxito, ¿Desea abrir el archivo?")
-            if reply == 'Yes':
-                abrirArchivo(ruta_Pdf)
+            ruta_Carpeta=crearCarpeta("PEDIDOS DE COMPRA")
+            ruta_Pdf=ruta_Carpeta+'Pedido de Compra ' + Nro_Pedido + '.pdf'
+            print(ruta_Pdf)
+            if ruta_Pdf !="":
+                pdf.output(ruta_Pdf, 'F')
+                self.pbEnviar.setEnabled(True)
+                reply = mensajeDialogo("pregunta", "Pregunta","Reporte PDF Generado con éxito, ¿Desea abrir el archivo?")
+                if reply == 'Yes':
+                    abrirArchivo(ruta_Pdf)
 
-        # except Exception as e:
-        #     mensajeDialogo("error", "Error", "Reporte Fallido")
-        #     print(e)
+        except Exception as e:
+            mensajeDialogo("error", "Error", "Reporte Fallido")
+            print(e)
 
     def Enviar(self):
         try:
