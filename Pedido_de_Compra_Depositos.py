@@ -7,11 +7,8 @@ from PyQt5.QtGui import*
 import urllib.request
 
 sqlCondPago="SELECT Descrip_cond,Cond_pago FROM `TAB_COM_003_Condiciones de Pago por Clientes`"
-
 sqlMoneda="SELECT Descrip_moneda,Cod_moneda FROM TAB_SOC_008_Monedas"
-
 sqlBanco="SELECT Descrip_Banco,Cod_Banco FROM TAB_SOC_016_Tipo_de_Bancos"
-
 sqlPais="SELECT Nombre,Cod_Pais FROM TAB_SOC_009_Ubigeo WHERE Cod_Depart_Region='0' AND Cod_Provincia='0' AND Cod_Distrito='0'"
 
 class Depositos(QMainWindow):
@@ -48,8 +45,7 @@ class Depositos(QMainWindow):
         self.cbProveedor.addItem(Cod_Prov)
         self.leRazon_Social.setText(Razon_Social)
         self.leEstado.setText(Estado_Pedido)
-        fecha=formatearFecha(Fecha)
-        self.leFecha_Pedido.setText(fecha)
+        self.leFecha_Pedido.setText(formatearFecha(Fecha))
         self.leNro_Pedido.setText(Nro_Pedido)
         self.leTipo_Pedido.setText(Tipo_Pedido)
         self.leEmpresa.setText(Nom_Soc)
@@ -100,7 +96,13 @@ class Depositos(QMainWindow):
 
     def Inicio(self):
 
-        sqlDep='''SELECT a.Monto_Compra, b.Descrip_moneda, c.Descrip_cond, a.Cuotas_Pagar, a.Cuota, a.Porc_Adelanto, a.Adelanto, d.Descrip_Banco, a.Nro_Cuenta, e.Nombre FROM TAB_COMP_014_Pedido_de_Compra_Crédito_Depósitos a LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda LEFT JOIN `TAB_COM_003_Condiciones de Pago por Clientes` c ON a.Condicion_Credito=c.Cond_pago LEFT JOIN TAB_SOC_016_Tipo_de_Bancos d ON a.Banco=d.Cod_Banco LEFT JOIN TAB_SOC_009_Ubigeo e ON a.Pais=e.Cod_Pais AND e.Cod_Depart_Region='0' AND e.Cod_Provincia='0' AND e.Cod_Distrito='0' WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND  Nro_Pedido='%s';'''%(Cod_Soc,Año,Nro_Pedido)
+        sqlDep='''SELECT a.Monto_Compra, b.Descrip_moneda, c.Descrip_cond, a.Cuotas_Pagar, a.Cuota, a.Porc_Adelanto, a.Adelanto, d.Descrip_Banco, a.Nro_Cuenta, e.Nombre
+        FROM TAB_COMP_014_Pedido_de_Compra_Crédito_Depósitos a
+        LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+        LEFT JOIN `TAB_COM_003_Condiciones de Pago por Clientes` c ON a.Condicion_Credito=c.Cond_pago
+        LEFT JOIN TAB_SOC_016_Tipo_de_Bancos d ON a.Banco=d.Cod_Banco
+        LEFT JOIN TAB_SOC_009_Ubigeo e ON a.Pais=e.Cod_Pais AND e.Cod_Depart_Region='0' AND e.Cod_Provincia='0' AND e.Cod_Distrito='0'
+        WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND  Nro_Pedido='%s';'''%(Cod_Soc,Año,Nro_Pedido)
         Dep=convlist(sqlDep)
 
         if Dep!=[]:
@@ -127,8 +129,9 @@ class Depositos(QMainWindow):
             self.leNro_Cuenta.setReadOnly(True)
             self.cbPais.setEnabled(False)
 
-
-        sqlDetDep="SELECT Nro_Cuota, Fecha_Deposito, Monto_Deposito FROM TAB_COMP_015_Pedido_de_Compra_Detalle_Depósitos WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s'"%(Cod_Soc,Año,Nro_Pedido)
+        sqlDetDep='''SELECT Nro_Cuota, Fecha_Deposito, Monto_Deposito
+        FROM TAB_COMP_015_Pedido_de_Compra_Detalle_Depósitos
+        WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s','''%(Cod_Soc,Año,Nro_Pedido)
         DetDep=consultarSql(sqlDetDep)
 
         if DetDep!=[]:
@@ -153,7 +156,6 @@ class Depositos(QMainWindow):
                 row+=1
 
     def Porcentaje(self):
-
         montocompra=self.leMonto_Compra.text()
         Monto_Compra=montocompra.replace(",","")
         porcadelanto=self.lePorcentaje_Adelanto.text()
@@ -171,7 +173,13 @@ class Depositos(QMainWindow):
 
     def Grabar(self):
         try:
-            sqlDep='''SELECT a.Monto_Compra, b.Descrip_moneda, c.Descrip_cond, a.Cuotas_Pagar, a.Cuota, a.Porc_Adelanto, a.Adelanto, d.Descrip_Banco, a.Nro_Cuenta, e.Nombre FROM TAB_COMP_014_Pedido_de_Compra_Crédito_Depósitos a LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda LEFT JOIN `TAB_COM_003_Condiciones de Pago por Clientes` c ON a.Condicion_Credito=c.Cond_pago LEFT JOIN TAB_SOC_016_Tipo_de_Bancos d ON a.Banco=d.Cod_Banco LEFT JOIN TAB_SOC_009_Ubigeo e ON a.Pais=e.Cod_Pais AND e.Cod_Depart_Region='0' AND e.Cod_Provincia='0' AND e.Cod_Distrito='0' WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND  Nro_Pedido='%s';'''%(Cod_Soc,Año,Nro_Pedido)
+            sqlDep='''SELECT a.Monto_Compra, b.Descrip_moneda, c.Descrip_cond, a.Cuotas_Pagar, a.Cuota, a.Porc_Adelanto, a.Adelanto, d.Descrip_Banco, a.Nro_Cuenta, e.Nombre
+            FROM TAB_COMP_014_Pedido_de_Compra_Crédito_Depósitos a
+            LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+            LEFT JOIN `TAB_COM_003_Condiciones de Pago por Clientes` c ON a.Condicion_Credito=c.Cond_pago
+            LEFT JOIN TAB_SOC_016_Tipo_de_Bancos d ON a.Banco=d.Cod_Banco
+            LEFT JOIN TAB_SOC_009_Ubigeo e ON a.Pais=e.Cod_Pais AND e.Cod_Depart_Region='0' AND e.Cod_Provincia='0' AND e.Cod_Distrito='0'
+            WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND  Nro_Pedido='%s';'''%(Cod_Soc,Año,Nro_Pedido)
             Dep=convlist(sqlDep)
 
             # Fecha=datetime.now().strftime("%Y-%m-%d")
