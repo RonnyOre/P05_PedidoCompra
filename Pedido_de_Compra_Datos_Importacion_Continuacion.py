@@ -3,6 +3,7 @@ from datetime import datetime
 from Funciones04 import*
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtWidgets import*
+from PyQt5.QtCore import *
 from PyQt5.QtGui import*
 import urllib.request
 
