@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>914</width>
-    <height>658</height>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -892,6 +892,30 @@ QTableWidget
         <column>
          <property name="text">
           <string>Precio</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Descuento</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>IGV</string>
          </property>
          <property name="font">
           <font>

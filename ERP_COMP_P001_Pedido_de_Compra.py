@@ -16,7 +16,6 @@ from Pedido_de_Compra_Interlocutor import Interlocutor
 from Pedido_de_Compra_Depositos import Depositos
 from Pedido_de_Compra_Condiciones_Posicion import Condiciones_Posicion
 
-
 dicTip_Ped={'1':'Compra Nacional','2':'Importaciones','3':'Traslados entre Plantas','4':'Entrada Gratis'}
 dicEstado={'1':'Proceso Emisión','2':'Enviado a Prov.','3':'Saldo Pendiente','4':'Recepcionada','9':'Eliminado'}
 
@@ -244,23 +243,12 @@ class Pedido_de_Compra(QMainWindow):
         global dict_textoPosicion
         dict_textoPosicion = {}
 
-    # def datosCabecera(self,codsoc,nomsoc,codusuario,nrocotiza,razonsocial,codprov,montoaprobado,fecha_req):
     def datosCabecera(self,data):
 
-        # global Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req,Fecha,Año
         global Data,Fecha,Año
 
         Data=data
         print(Data)
-
-        # Cod_Soc=codsoc
-        # Cod_Usuario=codusuario
-        # Nom_Soc=nomsoc
-        # Nro_Cotiza=nrocotiza
-        # Razon_Social=razonsocial
-        # Cod_Prov=codprov
-        # Monto_Aprobado=montoaprobado
-        # Fecha_Req=fecha_req
 
         Fecha=datetime.datetime.now().strftime("%Y-%m-%d")
         now = datetime.datetime.now()
@@ -438,7 +426,9 @@ class Pedido_de_Compra(QMainWindow):
                 except Exception as e:
                     print(e)
 
-                sqlItemCotiza = '''SELECT d.Item_Cotiza FROM TAB_COMP_002_Detalle_Cotización_de_Compra d LEFT JOIN TAB_COMP_001_Cotización_Compra a ON (d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov)
+                sqlItemCotiza = '''SELECT d.Item_Cotiza
+                FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
+                LEFT JOIN TAB_COMP_001_Cotización_Compra a ON (d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov)
                 WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' % (Data[0], Año, Data[3], Data[5])
                 ItemCotiza=convlist(sqlItemCotiza)
 
