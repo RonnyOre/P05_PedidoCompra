@@ -69,7 +69,7 @@ class TextoCabecera(QDialog):
             TexCab=convlist(sqlTexCab)
 
             if TexCab!=[]:
-                sqlTextoCabecera="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(texto_cabecera,Fecha,Hora,Data[1],Data[0],Año,NroDoc)
+                sqlTextoCabecera="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(texto_cabecera,Fecha,Hora,Data[2],Data[0],Año,NroDoc)
                 respuesta=ejecutarSql(sqlTextoCabecera)
 
                 if respuesta['respuesta']=='correcto':
@@ -80,7 +80,7 @@ class TextoCabecera(QDialog):
                 elif respuesta['respuesta']=='incorrecto':
                     mensajeDialogo("error", "Error", "El Texto de cabecera no se pudo modificar")
             else:
-                sqlTextoCabecera='''INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Año,3,NroDoc,0,texto_cabecera,Fecha,Hora,Data[1])
+                sqlTextoCabecera='''INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Año,3,NroDoc,0,texto_cabecera,Fecha,Hora,Data[2])
                 respuesta=ejecutarSql(sqlTextoCabecera)
 
                 if respuesta['respuesta']=='correcto':
@@ -158,7 +158,7 @@ class TextoPosicion(QDialog):
             text= consultarSql(sqlText)
 
             if text!=[]:
-                sqlTextoPos="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='%s' "%(texto_pos,Fecha,Hora,Data[1],Data[0],Año,NroDoc,ItemDoc)
+                sqlTextoPos="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='%s' "%(texto_pos,Fecha,Hora,Data[2],Data[0],Año,NroDoc,ItemDoc)
                 respuesta=ejecutarSql(sqlTextoPos)
 
                 if respuesta['respuesta']=='correcto':
@@ -171,7 +171,7 @@ class TextoPosicion(QDialog):
 
             else:
                 sqlTextoPos = '''INSERT INTO TAB_SOC_019_Texto_Proceso (Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s') ''' % (Data[0], Año, 3, NroDoc, ItemDoc, texto_pos, Fecha, Hora, Data[1])
+                VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s') ''' % (Data[0], Año, 3, NroDoc, ItemDoc, texto_pos, Fecha, Hora, Data[2])
                 respuesta = ejecutarSql(sqlTextoPos)
 
                 if respuesta['respuesta']=='correcto':
@@ -287,7 +287,7 @@ class Pedido_de_Compra(QMainWindow):
 
         insertarDatos(self.cbOrg_Compra, OrgComp)
 
-        self.leEmpresa.setText(Data[2])
+        self.leEmpresa.setText(Data[1])
         self.cbNro_Cotizacion.addItem(Data[3])
         self.cbProveedor.addItem(Data[5])
         self.leRazon_Social.setText(Data[4])
@@ -329,7 +329,7 @@ class Pedido_de_Compra(QMainWindow):
             self.pbCon_Pos.setEnabled(True)
             self.pbGrabar.setEnabled(False)
 
-            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
+            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido, a.Monto_Desc, a.Monto_IGV, a.Total_Parcial, b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
             FROM TAB_COMP_005_Detalle_Pedido_de_Compra a
             LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
             LEFT JOIN TAB_SOC_002_Planta c ON a.Cod_Empresa=c.Cod_soc AND a.Cod_Planta=c.Cod_Planta
@@ -351,7 +351,7 @@ class Pedido_de_Compra(QMainWindow):
             fecha=formatearFecha(Fecha)
             self.leFecha_Pedido.setText(fecha)
 
-            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm
+            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, d.Descuento, d.IGV, m.Descrip_moneda, p.Nomb_Planta, n.Nomb_Alm
             FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
             LEFT JOIN TAB_COMP_001_Cotización_Compra a ON d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov
             LEFT JOIN TAB_MAT_011_Descripcion_Idiomas c ON d.Cod_Mat= c.Cod_Mat AND d.Cod_Idioma=c.Cod_Idioma
@@ -360,7 +360,7 @@ class Pedido_de_Compra(QMainWindow):
             LEFT JOIN TAB_SOC_002_Planta p ON s.Cod_Soc=p.Cod_soc AND s.Centro=p.Cod_Planta
             LEFT JOIN TAB_SOC_003_Almacén n ON s.Cod_Soc=n.Cod_Soc AND s.Centro=n.Cod_Planta AND s.Almacen=n.Cod_Alm
             WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' %(Data[0], Año, Data[3], Data[5])
-            CargarPedComp(self,self.tbwPed_Comp,sqlTabla,Data[0],Año,"")
+            CargarCotComp(self,self.tbwPed_Comp,sqlTabla,Data[0],Año,"")
 
     def Grabar(self):
         global texto_cabecera
@@ -404,7 +404,7 @@ class Pedido_de_Compra(QMainWindow):
                 formaenvio=DatosCab[11]
                 fechavalidez=DatosCab[12]
 
-                sqlCabecera_PedComp="INSERT INTO TAB_COMP_004_Pedido_Compra(Cod_Emp, Nro_Pedido, Año_Pedido, Tipo_Pedido, Cod_Prov, Nro_Cotiza, Fecha_Doc_Pedido, Nro_Solp, Estado_Pedido, Moneda, Monto_Desc, Descuento, Forma_Pago, Forma_Envio, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_garantia, Forma_Garantia, FValidez_oferta, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Nro_Pedido,Año,Tipo_pedido,Data[5],Data[3],Fecha,NroSolp[0],Estado_Pedido,moneda,montodesc,descuento,formapago,formaenvio,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,fechavalidez,Fecha,Hora,Data[1])
+                sqlCabecera_PedComp="INSERT INTO TAB_COMP_004_Pedido_Compra(Cod_Emp, Nro_Pedido, Año_Pedido, Tipo_Pedido, Cod_Prov, Nro_Cotiza, Fecha_Doc_Pedido, Nro_Solp, Estado_Pedido, Moneda, Monto_Desc, Descuento, Forma_Pago, Forma_Envio, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_garantia, Forma_Garantia, FValidez_oferta, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Nro_Pedido,Año,Tipo_pedido,Data[5],Data[3],Fecha,NroSolp[0],Estado_Pedido,moneda,montodesc,descuento,formapago,formaenvio,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,fechavalidez,Fecha,Hora,Data[2])
                 respuesta=ejecutarSql(sqlCabecera_PedComp)
 
                 self.pbCon_Cab.setEnabled(True)
@@ -421,7 +421,7 @@ class Pedido_de_Compra(QMainWindow):
                 try:
                     # Texto Cabecera para la Nota de Ingreso
                     if texto_cabecera != None:
-                        sqlTextoCabecera='''INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Año,3,Nro_Pedido,0,texto_cabecera,Fecha,Hora,Data[1])
+                        sqlTextoCabecera='''INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Año,3,Nro_Pedido,0,texto_cabecera,Fecha,Hora,Data[2])
                         info=ejecutarSql(sqlTextoCabecera)
                 except Exception as e:
                     print(e)
@@ -443,14 +443,16 @@ class Pedido_de_Compra(QMainWindow):
                     Unidad=self.tbwPed_Comp.item(row,3).text()
                     Cantidad=self.tbwPed_Comp.item(row,4).text().replace(",","")
                     Precio=self.tbwPed_Comp.item(row,5).text().replace(",","")
-                    Valor=self.tbwPed_Comp.item(row,6).text().replace(",","")
+                    Descuento=self.tbwPed_Comp.item(row,6).text().replace(",","")
+                    IGV=self.tbwPed_Comp.item(row,7).text().replace(",","")
+                    Total=self.tbwPed_Comp.item(row,8).text().replace(",","")
 
-                    NombreM=self.tbwPed_Comp.item(row,7).text()
+                    NombreM=self.tbwPed_Comp.item(row,9).text()
                     for k,v in dicMoneda.items():
                         if NombreM==v:
                             Moneda=k
 
-                    NombreCentro=self.tbwPed_Comp.item(row,8).text()
+                    NombreCentro=self.tbwPed_Comp.item(row,10).text()
                     for k,v in dicPlanta.items():
                         if NombreCentro==v:
                             Centro=k
@@ -462,12 +464,12 @@ class Pedido_de_Compra(QMainWindow):
                     for a in alm:
                         diccAlmacen[a[1]]=a[0]
 
-                    NombreAlmacen=self.tbwPed_Comp.item(row,9).text()
+                    NombreAlmacen=self.tbwPed_Comp.item(row,11).text()
                     for k,v in diccAlmacen.items():
                         if NombreAlmacen==v:
                             Almacen=k
                     try:
-                        Lote=self.tbwPed_Comp.item(row,10).text()
+                        Lote=self.tbwPed_Comp.item(row,12).text()
                     except:
                         Lote=''
 
@@ -477,28 +479,27 @@ class Pedido_de_Compra(QMainWindow):
                     try:
                         textoposicion = dict_textoPosicion[Item]
                         sqlTextoPos = '''INSERT INTO TAB_SOC_019_Texto_Proceso (Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s') ''' % (Data[0], Año, 3, Nro_Pedido, Item, textoposicion, Fecha, Hora, Data[1])
+                        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s') ''' % (Data[0], Año, 3, Nro_Pedido, Item, textoposicion, Fecha, Hora, Data[2])
                         infoTexto = ejecutarSql(sqlTextoPos)
                         actualizarboton2(self,self.tbwPed_Comp,Data[0],Año,Nro_Pedido,Item,row)
                     except Exception as e:
                         print(e)
 
-                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Lote_Mat, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Lote,Good_Recep,Estado_Pedido,Fecha,Hora,Data[1])
+                    sqlDetalle="INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Monto_Desc, Monto_IGV, Total_Parcial, Moneda, Cod_Planta, Cod_Almacen, Lote_Mat, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');"%(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Descuento,IGV,Total,Moneda,Centro,Almacen,Lote,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
                     respuesta=ejecutarSql(sqlDetalle)
 
                     sqlSelect="SELECT Stock_Transito_Compra,Cod_Mat FROM TAB_MAT_002_Stock_Almacen WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Data[0],Centro,Almacen,Cod_Mat)
                     select=convlist(sqlSelect)
-                    print(select)
+
                     if select!=[]:
                         if select[0]=='0.000':
-                            sqlUpdate="UPDATE TAB_MAT_002_Stock_Almacen SET Stock_Transito_Compra='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Cantidad,Fecha,Hora,Data[1],Data[0],Centro,Almacen,Cod_Mat)
+                            sqlUpdate="UPDATE TAB_MAT_002_Stock_Almacen SET Stock_Transito_Compra='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Cantidad,Fecha,Hora,Data[2],Data[0],Centro,Almacen,Cod_Mat)
                         else:
                             NuevoStock=float(select[0])+float(Cantidad)
-                            sqlUpdate="UPDATE TAB_MAT_002_Stock_Almacen SET Stock_Transito_Compra='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(NuevoStock,Fecha,Hora,Data[1],Data[0],Centro,Almacen,Cod_Mat)
+                            sqlUpdate="UPDATE TAB_MAT_002_Stock_Almacen SET Stock_Transito_Compra='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(NuevoStock,Fecha,Hora,Data[2],Data[0],Centro,Almacen,Cod_Mat)
                         ejecutarSql(sqlUpdate)
                     else:
-                        sqlInsert="INSERT INTO TAB_MAT_002_Stock_Almacen(Cod_Soc, Cod_Planta, Cod_Alm, Cod_Mat, Stock_Transito_Compra,Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Centro,Almacen,Cod_Mat,Cantidad,Fecha,Hora,Data[1])
+                        sqlInsert="INSERT INTO TAB_MAT_002_Stock_Almacen(Cod_Soc, Cod_Planta, Cod_Alm, Cod_Mat, Stock_Transito_Compra,Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Centro,Almacen,Cod_Mat,Cantidad,Fecha,Hora,Data[2])
                         ejecutarSql(sqlInsert)
 
                 if respuesta['respuesta']=='correcto':
@@ -592,7 +593,7 @@ class Pedido_de_Compra(QMainWindow):
                 except:
                     list_precio.append("")
                 try:
-                    list_total.append(self.tbwPed_Comp.item(i,6).text())
+                    list_total.append(self.tbwPed_Comp.item(i,8).text())
                 except:
                     list_total.append("")
 
@@ -759,14 +760,14 @@ class Pedido_de_Compra(QMainWindow):
 
             sql="SELECT Correo_Inter FROM TAB_COMP_013_Pedido_de_Compra_Interlocutor WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Data[0],Año,Nro_Pedido)
             correo=convlist(sql)
-            sqlUsuario="SELECT Correo FROM TAB_SOC_005_Usuarios WHERE Cod_Soc='%s' AND Cod_usuario='%s';"%(Data[0],Data[1])
+            sqlUsuario="SELECT Correo FROM TAB_SOC_005_Usuarios WHERE Cod_Soc='%s' AND Cod_usuario='%s';"%(Data[0],Data[2])
             mailUsuario=convlist(sqlUsuario)
             if correo != []:
                 EnviarCorreo(correo[0],ruta_Pdf,"Pedido de Compra","Atte. Multiplay")
                 EnviarCorreo(mailUsuario[0],ruta_Pdf,"Pedido de Compra","Atte. Multiplay")
-                sqlCab="UPDATE TAB_COMP_004_Pedido_Compra SET Estado_Pedido='%s', Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Emp='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Data[1],Data[0],Año,Nro_Pedido)
+                sqlCab="UPDATE TAB_COMP_004_Pedido_Compra SET Estado_Pedido='%s', Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Emp='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Data[2],Data[0],Año,Nro_Pedido)
                 ejecutarSql(sqlCab)
-                sqlDet="UPDATE TAB_COMP_005_Detalle_Pedido_de_Compra SET Estado_Pedido='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Data[1],Data[0],Año,Nro_Pedido)
+                sqlDet="UPDATE TAB_COMP_005_Detalle_Pedido_de_Compra SET Estado_Pedido='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Empresa='%s' AND Año_Pedido='%s' AND Nro_Pedido='%s';"%(Estado_pedido,Fecha,Hora,Data[2],Data[0],Año,Nro_Pedido)
                 ejecutarSql(sqlDet)
                 self.leEstado.setText('Enviado a Prov.')
                 mensajeDialogo("informacion", "Información", "El Documento fue enviado con éxito")
@@ -782,7 +783,7 @@ class Pedido_de_Compra(QMainWindow):
         Estado_Pedido=self.leEstado.text()
         orgcomp=self.cbOrg_Compra.currentText()
         self.di=Datos_Importacion()
-        self.di.datosCabecera(Data[0],Data[1],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[2],orgcomp,Estado_Pedido)
+        self.di.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.di.showMaximized()
 
     def Cond_Cab(self):
@@ -791,7 +792,7 @@ class Pedido_de_Compra(QMainWindow):
         Estado_Pedido=self.leEstado.text()
         orgcomp=self.cbOrg_Compra.currentText()
         self.cc=Condiciones_Cabecera()
-        self.cc.datosCabecera(Data[0],Data[1],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[2],orgcomp,Estado_Pedido)
+        self.cc.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.cc.showMaximized()
 
     def Inter(self):
@@ -800,7 +801,7 @@ class Pedido_de_Compra(QMainWindow):
         Estado_Pedido=self.leEstado.text()
         orgcomp=self.cbOrg_Compra.currentText()
         self.int=Interlocutor()
-        self.int.datosCabecera(Data[0],Data[1],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[2],orgcomp,Estado_Pedido)
+        self.int.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.int.showMaximized()
 
     def Depos(self):
@@ -809,21 +810,21 @@ class Pedido_de_Compra(QMainWindow):
         Estado_Pedido=self.leEstado.text()
         orgcomp=self.cbOrg_Compra.currentText()
         self.de=Depositos()
-        self.de.datosCabecera(Data[0],Data[1],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[2],orgcomp,Estado_Pedido,Data[6])
+        self.de.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido,Data[6])
         self.de.showMaximized()
 
     def Cond_Pos(self):
         try:
             Item=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),0).text()
             Precio=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),5).text()
-            Valor=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),6).text()
-            Moneda=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),7).text()
+            Valor=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),8).text()
+            Moneda=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),9).text()
             Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
             Nro_Pedido=self.leNro_Pedido.text()
             Estado_Pedido=self.leEstado.text()
             orgcomp=self.cbOrg_Compra.currentText()
             self.cp=Condiciones_Posicion()
-            self.cp.datosCabecera(Data[0],Data[1],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[2],orgcomp,Estado_Pedido,Item,Precio,Valor,Moneda)
+            self.cp.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido,Item,Precio,Valor,Moneda)
             self.cp.showMaximized()
         except Exception as e:
             mensajeDialogo("error", "Error", "No se selecciono ninguna posición, verifique")

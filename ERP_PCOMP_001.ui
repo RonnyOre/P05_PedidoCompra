@@ -927,7 +927,7 @@ QTableWidget
         </column>
         <column>
          <property name="text">
-          <string>Valor</string>
+          <string>Total Parcial</string>
          </property>
          <property name="font">
           <font>
