@@ -16,6 +16,7 @@ from Pedido_de_Compra_Interlocutor import Interlocutor
 from Pedido_de_Compra_Depositos import Depositos
 from Pedido_de_Compra_Condiciones_Posicion import Condiciones_Posicion
 
+
 dicTip_Ped={'1':'Compra Nacional','2':'Importaciones','3':'Traslados entre Plantas','4':'Entrada Gratis'}
 dicEstado={'1':'Proceso Emisión','2':'Enviado a Prov.','3':'Saldo Pendiente','4':'Recepcionada','9':'Eliminado'}
 
@@ -243,12 +244,23 @@ class Pedido_de_Compra(QMainWindow):
         global dict_textoPosicion
         dict_textoPosicion = {}
 
+    # def datosCabecera(self,codsoc,nomsoc,codusuario,nrocotiza,razonsocial,codprov,montoaprobado,fecha_req):
     def datosCabecera(self,data):
 
+        # global Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req,Fecha,Año
         global Data,Fecha,Año
 
         Data=data
         print(Data)
+
+        # Cod_Soc=codsoc
+        # Cod_Usuario=codusuario
+        # Nom_Soc=nomsoc
+        # Nro_Cotiza=nrocotiza
+        # Razon_Social=razonsocial
+        # Cod_Prov=codprov
+        # Monto_Aprobado=montoaprobado
+        # Fecha_Req=fecha_req
 
         Fecha=datetime.datetime.now().strftime("%Y-%m-%d")
         now = datetime.datetime.now()
@@ -329,7 +341,7 @@ class Pedido_de_Compra(QMainWindow):
             self.pbCon_Pos.setEnabled(True)
             self.pbGrabar.setEnabled(False)
 
-            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido, a.Monto_Desc, a.Monto_IGV, a.Total_Parcial, b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
+            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
             FROM TAB_COMP_005_Detalle_Pedido_de_Compra a
             LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
             LEFT JOIN TAB_SOC_002_Planta c ON a.Cod_Empresa=c.Cod_soc AND a.Cod_Planta=c.Cod_Planta
@@ -351,7 +363,7 @@ class Pedido_de_Compra(QMainWindow):
             fecha=formatearFecha(Fecha)
             self.leFecha_Pedido.setText(fecha)
 
-            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, d.Descuento, d.IGV, m.Descrip_moneda, p.Nomb_Planta, n.Nomb_Alm
+            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm
             FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
             LEFT JOIN TAB_COMP_001_Cotización_Compra a ON d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov
             LEFT JOIN TAB_MAT_011_Descripcion_Idiomas c ON d.Cod_Mat= c.Cod_Mat AND d.Cod_Idioma=c.Cod_Idioma
@@ -360,7 +372,7 @@ class Pedido_de_Compra(QMainWindow):
             LEFT JOIN TAB_SOC_002_Planta p ON s.Cod_Soc=p.Cod_soc AND s.Centro=p.Cod_Planta
             LEFT JOIN TAB_SOC_003_Almacén n ON s.Cod_Soc=n.Cod_Soc AND s.Centro=n.Cod_Planta AND s.Almacen=n.Cod_Alm
             WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' %(Data[0], Año, Data[3], Data[5])
-            CargarCotComp(self,self.tbwPed_Comp,sqlTabla,Data[0],Año,"")
+            CargarPedComp(self,self.tbwPed_Comp,sqlTabla,Data[0],Año,"")
 
     def Grabar(self):
         global texto_cabecera
@@ -426,9 +438,7 @@ class Pedido_de_Compra(QMainWindow):
                 except Exception as e:
                     print(e)
 
-                sqlItemCotiza = '''SELECT d.Item_Cotiza
-                FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
-                LEFT JOIN TAB_COMP_001_Cotización_Compra a ON (d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov)
+                sqlItemCotiza = '''SELECT d.Item_Cotiza FROM TAB_COMP_002_Detalle_Cotización_de_Compra d LEFT JOIN TAB_COMP_001_Cotización_Compra a ON (d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov)
                 WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8';''' % (Data[0], Año, Data[3], Data[5])
                 ItemCotiza=convlist(sqlItemCotiza)
 
@@ -443,16 +453,14 @@ class Pedido_de_Compra(QMainWindow):
                     Unidad=self.tbwPed_Comp.item(row,3).text()
                     Cantidad=self.tbwPed_Comp.item(row,4).text().replace(",","")
                     Precio=self.tbwPed_Comp.item(row,5).text().replace(",","")
-                    Descuento=self.tbwPed_Comp.item(row,6).text().replace(",","")
-                    IGV=self.tbwPed_Comp.item(row,7).text().replace(",","")
-                    Total=self.tbwPed_Comp.item(row,8).text().replace(",","")
+                    Valor=self.tbwPed_Comp.item(row,6).text().replace(",","")
 
-                    NombreM=self.tbwPed_Comp.item(row,9).text()
+                    NombreM=self.tbwPed_Comp.item(row,7).text()
                     for k,v in dicMoneda.items():
                         if NombreM==v:
                             Moneda=k
 
-                    NombreCentro=self.tbwPed_Comp.item(row,10).text()
+                    NombreCentro=self.tbwPed_Comp.item(row,8).text()
                     for k,v in dicPlanta.items():
                         if NombreCentro==v:
                             Centro=k
@@ -464,12 +472,12 @@ class Pedido_de_Compra(QMainWindow):
                     for a in alm:
                         diccAlmacen[a[1]]=a[0]
 
-                    NombreAlmacen=self.tbwPed_Comp.item(row,11).text()
+                    NombreAlmacen=self.tbwPed_Comp.item(row,9).text()
                     for k,v in diccAlmacen.items():
                         if NombreAlmacen==v:
                             Almacen=k
                     try:
-                        Lote=self.tbwPed_Comp.item(row,12).text()
+                        Lote=self.tbwPed_Comp.item(row,10).text()
                     except:
                         Lote=''
 
@@ -485,12 +493,13 @@ class Pedido_de_Compra(QMainWindow):
                     except Exception as e:
                         print(e)
 
-                    sqlDetalle="INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Monto_Desc, Monto_IGV, Total_Parcial, Moneda, Cod_Planta, Cod_Almacen, Lote_Mat, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');"%(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Descuento,IGV,Total,Moneda,Centro,Almacen,Lote,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
+                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Lote_Mat, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
+                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Lote,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
                     respuesta=ejecutarSql(sqlDetalle)
 
                     sqlSelect="SELECT Stock_Transito_Compra,Cod_Mat FROM TAB_MAT_002_Stock_Almacen WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Data[0],Centro,Almacen,Cod_Mat)
                     select=convlist(sqlSelect)
-
+                    print(select)
                     if select!=[]:
                         if select[0]=='0.000':
                             sqlUpdate="UPDATE TAB_MAT_002_Stock_Almacen SET Stock_Transito_Compra='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Cantidad,Fecha,Hora,Data[2],Data[0],Centro,Almacen,Cod_Mat)
@@ -556,6 +565,7 @@ class Pedido_de_Compra(QMainWindow):
         FROM TAB_COMP_002_Detalle_Cotización_de_Compra
         WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Data[0], Año, Data[5], Data[3])
         FechaEntrega=convlist(sqlFecha_Entrega)
+        print(FechaEntrega)
 
         Nro_Pedido=self.leNro_Pedido.text()
 
@@ -593,7 +603,7 @@ class Pedido_de_Compra(QMainWindow):
                 except:
                     list_precio.append("")
                 try:
-                    list_total.append(self.tbwPed_Comp.item(i,8).text())
+                    list_total.append(self.tbwPed_Comp.item(i,6).text())
                 except:
                     list_total.append("")
 
@@ -734,7 +744,7 @@ class Pedido_de_Compra(QMainWindow):
             pdf.set_text_color(0, 0, 0)
             pdf.cell(277, 5, '----------------------------------------------', 0, 2, 'C') # los guiones ocupan los 50mm
             pdf.cell(277, 5, 'Firma', 0, 2, 'C')
-            pdf.cell(277, 5, 'Jefe de Ventas', 0, 0, 'C')
+            pdf.cell(277, 5, 'Jefe de Compras', 0, 0, 'C')
             root = tk.Tk()
             root.withdraw()
 
@@ -817,8 +827,8 @@ class Pedido_de_Compra(QMainWindow):
         try:
             Item=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),0).text()
             Precio=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),5).text()
-            Valor=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),8).text()
-            Moneda=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),9).text()
+            Valor=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),6).text()
+            Moneda=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),7).text()
             Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
             Nro_Pedido=self.leNro_Pedido.text()
             Estado_Pedido=self.leEstado.text()

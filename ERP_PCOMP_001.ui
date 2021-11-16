@@ -891,31 +891,7 @@ QTableWidget
         </column>
         <column>
          <property name="text">
-          <string>Precio</string>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Descuento</string>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>IGV</string>
+          <string>P. Unitario</string>
          </property>
          <property name="font">
           <font>

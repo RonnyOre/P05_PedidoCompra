@@ -211,6 +211,18 @@ def buscarTablaTbw(tbw, texto, columnas):
     except Exception as e:
         mensajeDialogo("error", "buscarTabla", e)
 
+def insertarFila(col,item,Derecha,Izquierda,Centro):
+    try:
+
+        if col in Derecha:
+            item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        if col in Izquierda:
+            item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        if col in Centro:
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+    except:
+        item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
 def formatearFecha(fecha):
     if fecha=="":
         return ""
@@ -1367,7 +1379,8 @@ def CargarCotApro(self,tw,sql):
                         i='-'
                     item=QTableWidgetItem(i)
                     item.setFlags(flags)
-                    item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                    insertarFila(col,item,[3],[1,7],[0,2,4,5,6,8])
+                    # item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
                     if tw.rowCount()<=row:
                         tw.insertRow(tw.rowCount())
                     tw.setItem(row, col, item)
@@ -1399,7 +1412,8 @@ def CargarPC(self,tw,sql,dicTipPed,dicEstado):
                     i='-'
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
-                item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                insertarFila(col,item,[],[3,4,6,7],[0,1,2,5])
+                # item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row, col, item)
@@ -1409,71 +1423,9 @@ def CargarPC(self,tw,sql,dicTipPed,dicEstado):
     else:
         mensajeDialogo("informacion","Informacion","No se encontraron cotizaciones aprobadas en este rango, verifique")
 
-def CargarCotComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
-    tw.clearContents()
-    informacion=consultarSql(sql)
-    print(informacion)
-    if informacion!=[]:
-        rows=tw.rowCount()
-        for r in range(rows):
-            tw.removeRow(1)
-        flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        item_ped=1
-        row=0
-        for fila in informacion:
-            fila.insert(0,str(item_ped))
-            total=float(fila[4])*float(fila[5])
-            descuento=total*(float(fila[6])/100)
-            IGV=(total-descuento)*(float(fila[7])/100)
-            totalparcial=(total-descuento)+IGV
-            fila[6]=descuento
-            fila[7]=IGV
-            fila.insert(8,str(totalparcial))
-
-            fila[4]=formatearDecimal(fila[4],'3')
-            fila[5]=formatearDecimal(fila[5],'2')
-            fila[6]=formatearDecimal(fila[6],'2')
-            fila[7]=formatearDecimal(fila[7],'2')
-            fila[8]=formatearDecimal(fila[8],'2')
-            col=0
-            for i in fila:
-                item=QTableWidgetItem(i)
-                item.setFlags(flags)
-                item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-                if tw.rowCount()<=row:
-                    tw.insertRow(tw.rowCount())
-                tw.setItem(row, col, item)
-                tw.resizeColumnToContents(col)
-
-                col += 1
-
-            sqlTexto="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s'AND Año='%s' AND Tipo_Proceso='3'AND Nro_Doc='%s'AND Item_Doc='%s'"%(Cod_Soc,Año,Nro_Doc,fila[0])
-            texto=consultarSql(sqlTexto)
-
-            btTexto=QPushButton(tw)
-            if tw.rowCount()<=row:
-                tw.insertRow(tw.rowCount())
-            tw.setCellWidget(row, 13, btTexto)
-
-            if texto!=[]:
-                cargarIcono(btTexto,'con_texto')
-            elif texto==[]:
-                cargarIcono(btTexto,'agregar_texto')
-
-            # tw.resizeColumnToContents(13)
-            font = QtGui.QFont()
-            font.setPointSize(13)
-            font.setBold(True)
-            btTexto.setFont(font)
-            btTexto.setStyleSheet("background-color: rgb(255, 213, 79);")
-            btTexto.clicked.connect(self.TextoPosicion)
-            row+=1
-            item_ped=int(item_ped)+1
-
 def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
     tw.clearContents()
     informacion=consultarSql(sql)
-    print(informacion)
     if informacion!=[]:
         rows=tw.rowCount()
         for r in range(rows):
@@ -1483,20 +1435,14 @@ def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
         row=0
         for fila in informacion:
             fila.insert(0,str(item_ped))
-            if fila[8]=='0.00':
-                total=float(fila[4])*float(fila[5])
-                fila[8]=total
-
-            fila[4]=formatearDecimal(fila[4],'3')
             fila[5]=formatearDecimal(fila[5],'2')
             fila[6]=formatearDecimal(fila[6],'2')
-            fila[7]=formatearDecimal(fila[7],'2')
-            fila[8]=formatearDecimal(fila[8],'2')
             col=0
             for i in fila:
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
-                item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                insertarFila(col,item,[4,5,6],[2,7,8,9],[0,1,3])
+                # item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row, col, item)
@@ -1510,38 +1456,40 @@ def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
             btTexto=QPushButton(tw)
             if tw.rowCount()<=row:
                 tw.insertRow(tw.rowCount())
-            tw.setCellWidget(row, 13, btTexto)
+            tw.setCellWidget(row, 11, btTexto)
 
             if texto!=[]:
                 cargarIcono(btTexto,'con_texto')
             elif texto==[]:
                 cargarIcono(btTexto,'agregar_texto')
 
-            # tw.resizeColumnToContents(13)
+            # tw.resizeColumnToContents(11)
             font = QtGui.QFont()
-            font.setPointSize(13)
+            font.setPointSize(11)
             font.setBold(True)
             btTexto.setFont(font)
             btTexto.setStyleSheet("background-color: rgb(255, 213, 79);")
             btTexto.clicked.connect(self.TextoPosicion)
             row+=1
             item_ped=int(item_ped)+1
+    # else:
+    #     QMessageBox.critical(self, "Informacion","No se encontraron datos", QMessageBox.Ok)
 
 def actualizarboton2(self,tw,Cod_Soc,Año,Nro_Doc,Item_Solp,row):
     sqlTexto="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s'AND Año='%s' AND Tipo_Proceso='3'AND Nro_Doc='%s'AND Item_Doc='%s'"%(Cod_Soc,Año,Nro_Doc,Item_Solp)
     texto=consultarSql(sqlTexto)
 
     btTexto=QPushButton(tw)
-    tw.setCellWidget(row, 13, btTexto)
+    tw.setCellWidget(row, 11, btTexto)
 
     if texto!=[]:
         cargarIcono(btTexto,'con_texto')
     elif texto==[]:
         cargarIcono(btTexto,'agregar_texto')
 
-    # tw.resizeColumnToContents(13)
+    # tw.resizeColumnToContents(11)
     font = QtGui.QFont()
-    font.setPointSize(13)
+    font.setPointSize(11)
     font.setBold(True)
     btTexto.setFont(font)
     btTexto.setStyleSheet("background-color: rgb(255, 213, 79);")
