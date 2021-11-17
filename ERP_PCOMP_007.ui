@@ -758,7 +758,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pbIngresar">
+         <widget class="QPushButton" name="pbAgregar">
           <property name="font">
            <font>
             <pointsize>11</pointsize>
@@ -936,7 +936,7 @@ QTableWidget
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lePorcentaje_4">
+         <widget class="QLineEdit" name="leVN_ID">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -1151,7 +1151,7 @@ QTableWidget
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pbIngresar_2">
+         <widget class="QPushButton" name="pbAgregar_2">
           <property name="font">
            <font>
             <pointsize>11</pointsize>
@@ -1329,7 +1329,7 @@ QTableWidget
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lePorcentaje_5">
+         <widget class="QLineEdit" name="leVN_II">
           <property name="enabled">
            <bool>true</bool>
           </property>
