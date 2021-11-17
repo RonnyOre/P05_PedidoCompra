@@ -1417,7 +1417,10 @@ def CargarPC(self,tw,sql,dicTipPed,dicEstado):
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row, col, item)
-                tw.resizeColumnToContents(col)
+                if col!=7:
+                    tw.resizeColumnToContents(col)
+                else:
+                    tw.setColumnHidden(col,True)
                 col += 1
             row+=1
     else:
