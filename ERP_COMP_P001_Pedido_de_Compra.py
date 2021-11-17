@@ -543,7 +543,8 @@ class Pedido_de_Compra(QMainWindow):
         sqlDatosCab='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
         FROM TAB_COMP_001_Cotización_Compra a
         LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
-        LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON a.Banco_deposito=c.Cod_Banco
+        LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor f ON a.Cod_Prov=f.Cod_Prov AND a.Banco_deposito=f.Nro_Correlativo
+        LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON f.Entidad_Bancaria=c.Cod_Banco
         LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
         LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
         WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s';'''%(Data[0], Año, Data[5], Data[3])
@@ -553,19 +554,24 @@ class Pedido_de_Compra(QMainWindow):
             sqlDatosCab2='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
             FROM TAB_COMP_004_Pedido_Compra a
             LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
-            LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON a.Banco_deposito=c.Cod_Banco
+            LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor f ON a.Cod_Prov=f.Cod_Prov AND a.Banco_deposito=f.Nro_Correlativo
+            LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON f.Entidad_Bancaria=c.Cod_Banco
             LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
             LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
             WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s' AND a.Cod_Prov='%s' AND a.Nro_Pedido='%s';'''%(Data[0], Año, Data[5], Data[3])
             DatosCab=convlist(sqlDatosCab2)
 
-        print(DatosCab)
-
         sqlFecha_Entrega='''SELECT MAX(Fecha_Ent_Prov)
         FROM TAB_COMP_002_Detalle_Cotización_de_Compra
         WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Data[0], Año, Data[5], Data[3])
         FechaEntrega=convlist(sqlFecha_Entrega)
-        print(FechaEntrega)
+
+        if FechaEntrega[0]==None:
+            sqlFecha_Entrega2='''SELECT MAX(a.Fecha_Ent_Prov)
+            FROM TAB_COMP_002_Detalle_Cotización_de_Compra a
+            LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra b ON a.Cod_Soc=b.Cod_Empresa AND a.Año=b.Año_Pedido AND a.Nro_Cotiza=b.Nro_Cotiza
+            WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND b.Nro_Pedido='%s';'''%(Data[0], Año, Data[5], Data[3])
+            FechaEntrega=convlist(sqlFecha_Entrega2)
 
         Nro_Pedido=self.leNro_Pedido.text()
 
