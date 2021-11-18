@@ -24,8 +24,8 @@ class Condiciones_Posicion(QMainWindow):
         self.pbSalir.clicked.connect(self.Salir)
         self.pbGrabar.clicked.connect(self.Grabar)
         # self.tbwCond_Pos.currentCellChanged.connect(self.AgregarFila)
-        # self.pbAgregar.clicked.connect(self.Tabla1)
-        # self.pbAgregar_2.clicked.connect(self.Tabla2)
+        self.pbAgregar.clicked.connect(self.Tabla1)
+        self.pbAgregar_2.clicked.connect(self.Tabla2)
 
     def datosCabecera(self,codsoc,codusuario,nrocotiza,razonsocial,codprov,nropedido,descrip_tipo_pedido,nomsoc,orgcomp,estadopedido,item,precio,valor,moneda):
 
@@ -83,9 +83,9 @@ class Condiciones_Posicion(QMainWindow):
         for m in moneda:
             dicMoneda[m[0]]=m[1]
 
-        sqlCondPos='''SELECT b.Descrip_Condicion, a.Porcentaje, a.Cantidad, a.Valor_Condicion, c.Descrip_moneda FROM TAB_COMP_012_Condiciones_de_Pedido_de_Compras a LEFT JOIN TAB_COMP_011_Tipos_de_Condiciones_de_Compras b ON a.Tipo_Cond_compra=b.Tipo_Cond_compra LEFT JOIN TAB_SOC_008_Monedas c ON a.Moneda=c.Cod_moneda
-        WHERE a.Cod_Soc='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s' AND a.Clase_condicion='2' AND a.Item_Pedido='%s';'''%(Cod_Soc,Nro_Pedido,Año,Item)
-        condPos(self,self.tbwCond_Pos,sqlCondPos,Cond_Comp,Cond_Comp1,Cond_Comp2,Cond_Comp3,dicCond_Comp,Precio,Valor,Moneda,Tipo_Pedido)
+        # sqlCondPos='''SELECT b.Descrip_Condicion, a.Porcentaje, a.Cantidad, a.Valor_Condicion, c.Descrip_moneda FROM TAB_COMP_012_Condiciones_de_Pedido_de_Compras a LEFT JOIN TAB_COMP_011_Tipos_de_Condiciones_de_Compras b ON a.Tipo_Cond_compra=b.Tipo_Cond_compra LEFT JOIN TAB_SOC_008_Monedas c ON a.Moneda=c.Cod_moneda
+        # WHERE a.Cod_Soc='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s' AND a.Clase_condicion='2' AND a.Item_Pedido='%s';'''%(Cod_Soc,Nro_Pedido,Año,Item)
+        # condPos(self,self.tbwCond_Pos,sqlCondPos,Cond_Comp,Cond_Comp1,Cond_Comp2,Cond_Comp3,dicCond_Comp,Precio,Valor,Moneda,Tipo_Pedido)
 
         self.Inicio()
 
@@ -99,7 +99,59 @@ class Condiciones_Posicion(QMainWindow):
         else:
             insertarDatos(self.cbCondicion_2,Cond_Comp3)
             self.cbCondicion_2.setCurrentIndex(-1)
-    #
+
+    def Tabla1(self):
+        try:
+            fila = []
+            fila.append(self.cbCondicion.currentText())
+            fila.append(self.lePorcentaje.text())
+            fila.append(self.leMonto.text())
+            fila.append('Aqui va el monto')
+            fila.append(Moneda)
+
+            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+            row=self.tbwCond_Pos.rowCount()
+            print(row)
+
+            col = 0
+            for i in fila:
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                if self.tbwCond_Pos.rowCount()<=row:
+                    self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
+                self.tbwCond_Pos.setItem(row, col, item)
+                col += 1
+
+        except Exception as e:
+            print(e)
+
+    def Tabla2(self):
+        try:
+            fila = []
+            fila.append(self.cbCondicion_2.currentText())
+            fila.append(self.lePorcentaje_2.text())
+            fila.append(self.leMonto_2.text())
+            fila.append('Aqui va el monto')
+            fila.append(Moneda)
+
+            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+            row=self.tbwCond_Pos_2.rowCount()
+            print(row)
+
+            col = 0
+            for i in fila:
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                if self.tbwCond_Pos_2.rowCount()<=row:
+                    self.tbwCond_Pos_2.insertRow(self.tbwCond_Pos_2.rowCount())
+                self.tbwCond_Pos_2.setItem(row, col, item)
+                col += 1
+
+        except Exception as e:
+            print(e)
+
     # def AgregarFila(self, fila, columna):
     #     if (fila == self.tbwCond_Pos.currentRow()) and (columna == self.tbwCond_Pos.columnCount()-1):
     #         rowPosition = self.tbwCond_Pos.currentRow()+1
