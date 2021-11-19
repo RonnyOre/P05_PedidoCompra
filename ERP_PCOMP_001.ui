@@ -951,7 +951,7 @@ QTableWidget
         </column>
         <column>
          <property name="text">
-          <string>Lote</string>
+          <string>Saldo Pend.</string>
          </property>
          <property name="font">
           <font>

@@ -954,6 +954,9 @@ QTableWidget
           <property name="frame">
            <bool>true</bool>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -1337,6 +1340,9 @@ QTableWidget
           </property>
           <property name="frame">
            <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>

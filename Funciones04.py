@@ -1412,7 +1412,7 @@ def CargarPC(self,tw,sql,dicTipPed,dicEstado):
                     i='-'
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
-                insertarFila(col,item,[],[3,4,6,7],[0,1,2,5])
+                insertarFila(col,item,[],[3,4,7],[0,1,2,5,6])
                 # item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
@@ -1438,8 +1438,10 @@ def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
         row=0
         for fila in informacion:
             fila.insert(0,str(item_ped))
+            fila[4]=formatearDecimal(fila[4],'3')
             fila[5]=formatearDecimal(fila[5],'2')
             fila[6]=formatearDecimal(fila[6],'2')
+            fila[10]=formatearDecimal(fila[10],'3')
             col=0
             for i in fila:
                 item=QTableWidgetItem(i)

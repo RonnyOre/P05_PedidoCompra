@@ -244,23 +244,11 @@ class Pedido_de_Compra(QMainWindow):
         global dict_textoPosicion
         dict_textoPosicion = {}
 
-    # def datosCabecera(self,codsoc,nomsoc,codusuario,nrocotiza,razonsocial,codprov,montoaprobado,fecha_req):
     def datosCabecera(self,data):
 
-        # global Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Monto_Aprobado,Fecha_Req,Fecha,Año
         global Data,Fecha,Año
 
         Data=data
-        print(Data)
-
-        # Cod_Soc=codsoc
-        # Cod_Usuario=codusuario
-        # Nom_Soc=nomsoc
-        # Nro_Cotiza=nrocotiza
-        # Razon_Social=razonsocial
-        # Cod_Prov=codprov
-        # Monto_Aprobado=montoaprobado
-        # Fecha_Req=fecha_req
 
         Fecha=datetime.datetime.now().strftime("%Y-%m-%d")
         now = datetime.datetime.now()
@@ -341,7 +329,7 @@ class Pedido_de_Compra(QMainWindow):
             self.pbCon_Pos.setEnabled(True)
             self.pbGrabar.setEnabled(False)
 
-            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Lote_Mat
+            sqlTabla ='''SELECT a.Cod_Mat, a.Descrp_Mat, a.Unid_Pedido, a.Cant_Pedido, a.Precio_Pedido,(a.Cant_Pedido*a.Precio_Pedido),b.Descrip_moneda, c.Nomb_Planta, d.Nomb_Alm, a.Cant_Entregado
             FROM TAB_COMP_005_Detalle_Pedido_de_Compra a
             LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
             LEFT JOIN TAB_SOC_002_Planta c ON a.Cod_Empresa=c.Cod_soc AND a.Cod_Planta=c.Cod_Planta

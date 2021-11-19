@@ -16,6 +16,8 @@ sqlCond_Comp3="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos
 
 sqlMoneda="SELECT Cod_moneda,Descrip_moneda FROM TAB_SOC_008_Monedas"
 
+flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
 class Condiciones_Posicion(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -100,92 +102,121 @@ class Condiciones_Posicion(QMainWindow):
             insertarDatos(self.cbCondicion_2,Cond_Comp3)
             self.cbCondicion_2.setCurrentIndex(-1)
 
+        Lista=['Precio','', Precio, Valor, Moneda]
+        col = 0
+        for i in Lista:
+            item=QTableWidgetItem(i)
+            item.setFlags(flags)
+            insertarFila(col,item,[2,3],[0],[1,4])
+            if self.tbwCond_Pos.rowCount() <= 0:
+                self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
+            self.tbwCond_Pos.setItem(0, col, item)
+            col += 1
+
+        self.leVN_ID.setText(Valor)
+
     def Tabla1(self):
         try:
-            fila = []
-            fila.append(self.cbCondicion.currentText())
-            fila.append(self.lePorcentaje.text())
-            fila.append(self.leMonto.text())
-            fila.append('Aqui va el monto')
-            fila.append(Moneda)
+            listaCondicion=[]
+            for i in range(self.tbwCond_Pos.rowCount()):
+                try:
+                    listaCondicion.append(self.tbwCond_Pos.item(i,0).text())
+                except Exception as e:
+                    print(e)
 
-            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            Condicion=self.cbCondicion.currentText()
+            ValorNeto=self.leVN_ID.text().replace(",","")
 
-            row=self.tbwCond_Pos.rowCount()
-            print(row)
+            if Condicion not in listaCondicion:
 
-            col = 0
-            for i in fila:
-                item=QTableWidgetItem(i)
-                item.setFlags(flags)
-                if self.tbwCond_Pos.rowCount()<=row:
-                    self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
-                self.tbwCond_Pos.setItem(row, col, item)
-                col += 1
+                fila = []
+                fila.append(Condicion)
+
+                porcentaje=formatearDecimal(self.lePorcentaje.text(), '2')
+                Porcentaje=porcentaje.replace(",","")
+                fila.append(porcentaje)
+
+                monto=formatearDecimal(self.leMonto.text(), '2')
+                Monto=monto.replace(",","")
+                fila.append(monto)
+
+                if Condicion[:9]=='Descuento':
+                    ValorCondicion=float(ValorNeto)*(float(Porcentaje) / 100)
+                    ValorNetoActual=float(ValorNeto)-ValorCondicion
+
+                if Condicion=='Transporte':
+                    ValorCondicion=float(Monto)
+                    ValorNetoActual=float(ValorNeto)+ValorCondicion
+
+                fila.append(formatearDecimal(str(ValorCondicion),'2'))
+                fila.append(Moneda)
+
+                row=self.tbwCond_Pos.rowCount()
+
+                col = 0
+                for i in fila:
+                    item=QTableWidgetItem(i)
+                    item.setFlags(flags)
+                    insertarFila(col,item,[2,3],[0],[1,4])
+                    if self.tbwCond_Pos.rowCount()<=row:
+                        self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
+                    self.tbwCond_Pos.setItem(row, col, item)
+                    col += 1
+
+                self.leVN_ID.setText(formatearDecimal(str(ValorNetoActual),'2'))
+
+                self.cbCondicion.setCurrentIndex(-1)
+                self.lePorcentaje.clear()
+                self.leMonto.clear()
+            else:
+                mensajeDialogo("error", "Error", "Esta Condición ya se encuentra registrada")
 
         except Exception as e:
             print(e)
 
     def Tabla2(self):
         try:
-            fila = []
-            fila.append(self.cbCondicion_2.currentText())
-            fila.append(self.lePorcentaje_2.text())
-            fila.append(self.leMonto_2.text())
-            fila.append('Aqui va el monto')
-            fila.append(Moneda)
+            listaCondicion=[]
+            for i in range(self.tbwCond_Pos_2.rowCount()):
+                try:
+                    listaCondicion.append(self.tbwCond_Pos_2.item(i,0).text())
+                except Exception as e:
+                    print(e)
 
-            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            Condicion=self.cbCondicion_2.currentText()
+            ValorNeto=self.leVN_ID.text().replace(",","")
 
-            row=self.tbwCond_Pos_2.rowCount()
-            print(row)
+            if Condicion not in listaCondicion:
 
-            col = 0
-            for i in fila:
-                item=QTableWidgetItem(i)
-                item.setFlags(flags)
-                if self.tbwCond_Pos_2.rowCount()<=row:
-                    self.tbwCond_Pos_2.insertRow(self.tbwCond_Pos_2.rowCount())
-                self.tbwCond_Pos_2.setItem(row, col, item)
-                col += 1
+                fila = []
+                fila.append(self.cbCondicion_2.currentText())
+                fila.append(self.lePorcentaje_2.text())
+                fila.append(self.leMonto_2.text())
+                fila.append('Aqui va el monto')
+                fila.append(Moneda)
+
+                row=self.tbwCond_Pos_2.rowCount()
+
+                col = 0
+                for i in fila:
+                    item=QTableWidgetItem(i)
+                    item.setFlags(flags)
+                    insertarFila(col,item,[2,3],[0],[1,4])
+                    if self.tbwCond_Pos_2.rowCount()<=row:
+                        self.tbwCond_Pos_2.insertRow(self.tbwCond_Pos_2.rowCount())
+                    self.tbwCond_Pos_2.setItem(row, col, item)
+                    col += 1
+
+                self.cbCondicion_2.setCurrentIndex(-1)
+                self.lePorcentaje_2.clear()
+                self.leMonto_2.clear()
+            else:
+                mensajeDialogo("error", "Error", "Esta Condición ya se encuentra registrada")
 
         except Exception as e:
             print(e)
 
-    # def AgregarFila(self, fila, columna):
-    #     if (fila == self.tbwCond_Pos.currentRow()) and (columna == self.tbwCond_Pos.columnCount()-1):
-    #         rowPosition = self.tbwCond_Pos.currentRow()+1
-    #         reply = mensajeDialogo("pregunta", "Pregunta","¿Realmente desea insertar una fila?")
-    #         if reply == 'Yes':
-    #             self.tbwCond_Pos.insertRow(rowPosition)
-    #
-    #             cb = QComboBox(self.tbwCond_Pos)
-    #             self.tbwCond_Pos.setCellWidget(rowPosition, 0, cb)
-    #             if rowPosition<5:
-    #                 insertarDatos(cb,Cond_Comp1)
-    #                 cb.setCurrentIndex(-1)
-    #                 font = QtGui.QFont()
-    #                 font.setPointSize(12)
-    #                 cb.setFont(font)
-    #                 self.tbwCond_Pos.resizeColumnToContents(0)
-    #                 cb.activated.connect(self.Condicion1)
-    #             elif rowPosition>5:
-    #                 if Tipo_Pedido=='Importaciones':
-    #                     insertarDatos(cb,Cond_Comp2)
-    #                     cb.setCurrentIndex(-1)
-    #                     font = QtGui.QFont()
-    #                     font.setPointSize(12)
-    #                     cb.setFont(font)
-    #                     self.tbwCond_Pos.resizeColumnToContents(0)
-    #                     cb.activated.connect(self.Condicion2)
-    #                 else:
-    #                     insertarDatos(cb,Cond_Comp3)
-    #                     cb.setCurrentIndex(-1)
-    #                     font = QtGui.QFont()
-    #                     font.setPointSize(12)
-    #                     cb.setFont(font)
-    #                     self.tbwCond_Pos.resizeColumnToContents(0)
-    #                     cb.activated.connect(self.Condicion3)
+
 
     # def Condicion1(self):
     #     condicion=self.tbwCond_Pos.cellWidget(self.tbwCond_Pos.currentRow(),0).currentText()
