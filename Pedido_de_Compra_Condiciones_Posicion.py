@@ -8,11 +8,7 @@ import urllib.request
 
 sqlCond_Comp="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos_de_Condiciones_de_Compras"
 
-sqlCond_Comp1="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos_de_Condiciones_de_Compras WHERE Tipo_Cond_compra<'06'"
-
-sqlCond_Comp2="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos_de_Condiciones_de_Compras WHERE Tipo_Cond_compra>'05'"
-
-sqlCond_Comp3="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos_de_Condiciones_de_Compras WHERE Tipo_Cond_compra='06'"
+sqlCond_Comp1="SELECT Descrip_Condicion,Tipo_Cond_compra FROM TAB_COMP_011_Tipos_de_Condiciones_de_Compras WHERE Tipo_Cond_compra<'07'"
 
 sqlMoneda="SELECT Cod_moneda,Descrip_moneda FROM TAB_SOC_008_Monedas"
 
@@ -25,9 +21,9 @@ class Condiciones_Posicion(QMainWindow):
 
         self.pbSalir.clicked.connect(self.Salir)
         self.pbGrabar.clicked.connect(self.Grabar)
-        # self.tbwCond_Pos.currentCellChanged.connect(self.AgregarFila)
-        self.pbAgregar.clicked.connect(self.Tabla1)
-        self.pbAgregar_2.clicked.connect(self.Tabla2)
+        self.cbCondicion.activated.connect(self.Condicion)
+        self.pbAgregar.clicked.connect(self.Tabla)
+        self.pbLimpiar.clicked.connect(self.Limpiar)
 
     def datosCabecera(self,codsoc,codusuario,nrocotiza,razonsocial,codprov,nropedido,descrip_tipo_pedido,nomsoc,orgcomp,estadopedido,item,precio,valor,moneda):
 
@@ -69,7 +65,7 @@ class Condiciones_Posicion(QMainWindow):
         cargarIcono(self.pbSalir, 'salir')
         cargarIcono(self.pbGrabar, 'grabar')
 
-        global dicCond_Comp,Cond_Comp1,Cond_Comp2,Cond_Comp3,dicMoneda
+        global dicCond_Comp,Cond_Comp,Cond_Comp1,dicMoneda
 
         Cond_Comp = consultarSql(sqlCond_Comp)
         dicCond_Comp={}
@@ -77,8 +73,6 @@ class Condiciones_Posicion(QMainWindow):
             dicCond_Comp[dato[1]]=dato[0]
 
         Cond_Comp1 = consultarSql(sqlCond_Comp1)
-        Cond_Comp2 = consultarSql(sqlCond_Comp2)
-        Cond_Comp3 = consultarSql(sqlCond_Comp3)
 
         moneda=consultarSql(sqlMoneda)
         dicMoneda={}
@@ -92,15 +86,13 @@ class Condiciones_Posicion(QMainWindow):
         self.Inicio()
 
     def Inicio(self):
-        insertarDatos(self.cbCondicion,Cond_Comp1)
-        self.cbCondicion.setCurrentIndex(-1)
 
-        if Tipo_Pedido=='Importaciones':
-            insertarDatos(self.cbCondicion_2,Cond_Comp2)
-            self.cbCondicion_2.setCurrentIndex(-1)
+        if Tipo_Pedido!='Importaciones':
+            insertarDatos(self.cbCondicion,Cond_Comp1)
+            self.cbCondicion.setCurrentIndex(-1)
         else:
-            insertarDatos(self.cbCondicion_2,Cond_Comp3)
-            self.cbCondicion_2.setCurrentIndex(-1)
+            insertarDatos(self.cbCondicion,Cond_Comp)
+            self.cbCondicion.setCurrentIndex(-1)
 
         Lista=['Precio','', Precio, Valor, Moneda]
         col = 0
@@ -115,17 +107,53 @@ class Condiciones_Posicion(QMainWindow):
 
         self.leVN_ID.setText(Valor)
 
-    def Tabla1(self):
-        try:
+    def Condicion(self):
+        self.lePorcentaje.setReadOnly(False)
+        self.leMonto.setReadOnly(False)
+        Condicion=self.cbCondicion.currentText()
+
+        if Condicion[:9]=='Descuento':
             listaCondicion=[]
             for i in range(self.tbwCond_Pos.rowCount()):
                 try:
                     listaCondicion.append(self.tbwCond_Pos.item(i,0).text())
                 except Exception as e:
                     print(e)
+            if Condicion=='Descuento 2':
+                if 'Descuento 1' not in listaCondicion:
+                    mensajeDialogo("error", "Error", "Es necesario seguir el orden de descuentos")
+                    self.cbCondicion.setCurrentIndex(-1)
+            if Condicion=='Descuento 3':
+                if 'Descuento 2' not in listaCondicion:
+                    mensajeDialogo("error", "Error", "Es necesario seguir el orden de descuentos")
+                    self.cbCondicion.setCurrentIndex(-1)
+            self.leMonto.setReadOnly(True)
+        if Condicion=='Transporte':
+            self.lePorcentaje.setReadOnly(True)
+        if Condicion=='IGV':
+            self.leMonto.setReadOnly(True)
+        if Condicion[:3]=='CI.':
+            self.lePorcentaje.setReadOnly(True)
+
+    def Tabla(self):
+        try:
+            listaCondicion=[]
+            for i in range(self.tbwCond_Pos.rowCount()):
+                try:
+                    listaCondicion.append(self.tbwCond_Pos.item(i,0).text())
+
+                except Exception as e:
+                    print(e)
+
+            for i in range(self.tbwCond_Pos_2.rowCount()):
+                try:
+                    listaCondicion.append(self.tbwCond_Pos_2.item(i,0).text())
+                except Exception as e:
+                    print(e)
 
             Condicion=self.cbCondicion.currentText()
             ValorNeto=self.leVN_ID.text().replace(",","")
+            ValorNeto_2=self.leVN_II.text().replace(",","")
 
             if Condicion not in listaCondicion:
 
@@ -143,385 +171,96 @@ class Condiciones_Posicion(QMainWindow):
                 if Condicion[:9]=='Descuento':
                     ValorCondicion=float(ValorNeto)*(float(Porcentaje) / 100)
                     ValorNetoActual=float(ValorNeto)-ValorCondicion
+                    fila.append(formatearDecimal(str(ValorCondicion),'2'))
+                    fila.append(Moneda)
+                    self.CargarData(self.tbwCond_Pos,self.leVN_ID,fila,ValorCondicion,ValorNetoActual)
 
                 if Condicion=='Transporte':
                     ValorCondicion=float(Monto)
                     ValorNetoActual=float(ValorNeto)+ValorCondicion
+                    fila.append(formatearDecimal(str(ValorCondicion),'2'))
+                    fila.append(Moneda)
+                    self.CargarData(self.tbwCond_Pos,self.leVN_ID,fila,ValorCondicion,ValorNetoActual)
 
-                fila.append(formatearDecimal(str(ValorCondicion),'2'))
-                fila.append(Moneda)
+                if Condicion=='IGV':
+                    ValorCondicion=float(ValorNeto)*(float(Porcentaje) / 100)
+                    ValorNetoActual=float(ValorNeto)+ValorCondicion
+                    fila.append(formatearDecimal(str(ValorCondicion),'2'))
+                    fila.append(Moneda)
+                    self.CargarData(self.tbwCond_Pos_2,self.leVN_II,fila,ValorCondicion,ValorNetoActual)
 
-                row=self.tbwCond_Pos.rowCount()
+                if Condicion[:3]=='CI.':
+                    ValorCondicion=float(Monto)
+                    ValorNetoActual=float(ValorNeto_2)+ValorCondicion
+                    fila.append(formatearDecimal(str(ValorCondicion),'2'))
+                    fila.append(Moneda)
+                    self.CargarData(self.tbwCond_Pos_2,self.leVN_II,fila,ValorCondicion,ValorNetoActual)
 
-                col = 0
-                for i in fila:
-                    item=QTableWidgetItem(i)
-                    item.setFlags(flags)
-                    insertarFila(col,item,[2,3],[0],[1,4])
-                    if self.tbwCond_Pos.rowCount()<=row:
-                        self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
-                    self.tbwCond_Pos.setItem(row, col, item)
-                    col += 1
-
-                self.leVN_ID.setText(formatearDecimal(str(ValorNetoActual),'2'))
-
-                self.cbCondicion.setCurrentIndex(-1)
-                self.lePorcentaje.clear()
-                self.leMonto.clear()
             else:
                 mensajeDialogo("error", "Error", "Esta Condición ya se encuentra registrada")
 
         except Exception as e:
+            self.cbCondicion.setCurrentIndex(-1)
+            self.lePorcentaje.clear()
+            self.leMonto.clear()
             print(e)
 
-    def Tabla2(self):
+    def CargarData(self,tw,lineEdit,fila,ValorCondicion,ValorNetoActual):
         try:
-            listaCondicion=[]
-            for i in range(self.tbwCond_Pos_2.rowCount()):
-                try:
-                    listaCondicion.append(self.tbwCond_Pos_2.item(i,0).text())
-                except Exception as e:
-                    print(e)
+            row=tw.rowCount()
+            col = 0
+            for i in fila:
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                insertarFila(col,item,[2,3],[0],[1,4])
+                if tw.rowCount()<=row:
+                    tw.insertRow(tw.rowCount())
+                tw.setItem(row, col, item)
+                col += 1
 
-            Condicion=self.cbCondicion_2.currentText()
-            ValorNeto=self.leVN_ID.text().replace(",","")
+            lineEdit.setText(formatearDecimal(str(ValorNetoActual),'2'))
 
-            if Condicion not in listaCondicion:
-
-                fila = []
-                fila.append(self.cbCondicion_2.currentText())
-                fila.append(self.lePorcentaje_2.text())
-                fila.append(self.leMonto_2.text())
-                fila.append('Aqui va el monto')
-                fila.append(Moneda)
-
-                row=self.tbwCond_Pos_2.rowCount()
-
-                col = 0
-                for i in fila:
-                    item=QTableWidgetItem(i)
-                    item.setFlags(flags)
-                    insertarFila(col,item,[2,3],[0],[1,4])
-                    if self.tbwCond_Pos_2.rowCount()<=row:
-                        self.tbwCond_Pos_2.insertRow(self.tbwCond_Pos_2.rowCount())
-                    self.tbwCond_Pos_2.setItem(row, col, item)
-                    col += 1
-
-                self.cbCondicion_2.setCurrentIndex(-1)
-                self.lePorcentaje_2.clear()
-                self.leMonto_2.clear()
-            else:
-                mensajeDialogo("error", "Error", "Esta Condición ya se encuentra registrada")
+            self.cbCondicion.setCurrentIndex(-1)
+            self.lePorcentaje.clear()
+            self.leMonto.clear()
 
         except Exception as e:
+            self.cbCondicion.setCurrentIndex(-1)
+            self.lePorcentaje.clear()
+            self.leMonto.clear()
             print(e)
 
+    def Limpiar(self):
+        reply = mensajeDialogo("pregunta", "Pregunta","¿Realmente desea limpiar las tablas? Se perderán todos los datos ingresados")
+        if reply == 'Yes':
+            # reply = mensajeDialogo("pregunta", "Pregunta","¿Está seguro?")
+            # if reply == 'Yes':
+            #     reply = mensajeDialogo("pregunta", "Pregunta","Que conste que le avise")
+            #     if reply == 'Yes':
+            self.tbwCond_Pos.clearContents()
+            rows=self.tbwCond_Pos.rowCount()
+            for r in range(rows):
+                self.tbwCond_Pos.removeRow(1)
+            self.tbwCond_Pos_2.clearContents()
+            rows=self.tbwCond_Pos_2.rowCount()
+            for r in range(rows):
+                self.tbwCond_Pos_2.removeRow(0)
 
+            Lista=['Precio','', Precio, Valor, Moneda]
+            col = 0
+            for i in Lista:
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                insertarFila(col,item,[2,3],[0],[1,4])
+                if self.tbwCond_Pos.rowCount() <= 0:
+                    self.tbwCond_Pos.insertRow(self.tbwCond_Pos.rowCount())
+                self.tbwCond_Pos.setItem(0, col, item)
+                col += 1
 
-    # def Condicion1(self):
-    #     condicion=self.tbwCond_Pos.cellWidget(self.tbwCond_Pos.currentRow(),0).currentText()
-    #     try:
-    #         global total
-    #         flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #         if condicion=='Descuento 1':
-    #             Monto=Valor.replace(",","")
-    #             porcentaje=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),1).text()
-    #             if porcentaje!="":
-    #                 Porc_Adelanto=porcentaje.replace(",","")
-    #                 n1 = float(Monto)
-    #                 n2 = float(Porc_Adelanto)
-    #                 res = eval("n1 * (n2 / 100)")
-    #
-    #                 info = QTableWidgetItem(porcentaje)
-    #                 info.setFlags(flags)
-    #                 info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 1, info)
-    #
-    #                 item1=QTableWidgetItem(formatearDecimal(str(res),'2'))
-    #                 item1.setFlags(flags)
-    #                 item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #                 item3=QTableWidgetItem(Moneda)
-    #                 item3.setFlags(flags)
-    #                 item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #                 total=float(Monto)-float(res)
-    #                 item11=QTableWidgetItem(formatearDecimal(str(total),'2'))
-    #                 item11.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item11.setBackground(brush)
-    #                 item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #                 item33=QTableWidgetItem(Moneda)
-    #                 item33.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item33.setBackground(brush)
-    #                 item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #
-    #         elif condicion=='Descuento 2':
-    #             Monto=Valor.replace(",","")
-    #             descuento1=self.tbwCond_Pos.item(1,3).text()
-    #             descuento1=descuento1.replace(",","")
-    #             porcentaje=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),1).text()
-    #             if porcentaje!="":
-    #                 Porc_Adelanto=porcentaje.replace(",","")
-    #                 n1 = float(Monto)-float(descuento1)
-    #                 n2 = float(Porc_Adelanto)
-    #                 res = eval("n1 * (n2 / 100)")
-    #
-    #                 info = QTableWidgetItem(porcentaje)
-    #                 info.setFlags(flags)
-    #                 info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 1, info)
-    #
-    #                 item1=QTableWidgetItem(formatearDecimal(str(res),'2'))
-    #                 item1.setFlags(flags)
-    #                 item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #                 item3=QTableWidgetItem(Moneda)
-    #                 item3.setFlags(flags)
-    #                 item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #                 total=float(Monto)-(float(descuento1)+float(res))
-    #                 item11=QTableWidgetItem(formatearDecimal(str(total),'2'))
-    #                 item11.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item11.setBackground(brush)
-    #                 item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #                 item33=QTableWidgetItem(Moneda)
-    #                 item33.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item33.setBackground(brush)
-    #                 item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #         elif condicion=='Descuento 3':
-    #             Monto=Valor.replace(",","")
-    #             descuento1=self.tbwCond_Pos.item(1,3).text()
-    #             descuento1=descuento1.replace(",","")
-    #             descuento2=self.tbwCond_Pos.item(2,3).text()
-    #             descuento2=descuento2.replace(",","")
-    #             porcentaje=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),1).text()
-    #             if porcentaje!="":
-    #                 Porc_Adelanto=porcentaje.replace(",","")
-    #                 n1 = float(Monto)-(float(descuento1)+float(descuento2))
-    #                 n2 = float(Porc_Adelanto)
-    #                 res = eval("n1 * (n2 / 100)")
-    #
-    #                 info = QTableWidgetItem(porcentaje)
-    #                 info.setFlags(flags)
-    #                 info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 1, info)
-    #
-    #                 item1=QTableWidgetItem(formatearDecimal(str(res),'2'))
-    #                 item1.setFlags(flags)
-    #                 item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #                 item3=QTableWidgetItem(Moneda)
-    #                 item3.setFlags(flags)
-    #                 item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #                 total=float(Monto)-(float(descuento1)+float(descuento2)+float(res))
-    #                 item11=QTableWidgetItem(formatearDecimal(str(total),'2'))
-    #                 item11.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item11.setBackground(brush)
-    #                 item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #                 item33=QTableWidgetItem(Moneda)
-    #                 item33.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item33.setBackground(brush)
-    #                 item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #         else:
-    #             transporte=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),2).text()
-    #             flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #             item1=QTableWidgetItem(formatearDecimal(str(transporte),'2'))
-    #             item1.setFlags(flags)
-    #             item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #             num = formatearDecimal(transporte,'2')
-    #             info = QTableWidgetItem(num)
-    #             info.setFlags(flags)
-    #             info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 2, info)
-    #
-    #             item3=QTableWidgetItem(Moneda)
-    #             item3.setFlags(flags)
-    #             item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #             Total=float(total)+float(transporte)
-    #             item11=QTableWidgetItem(formatearDecimal(str(Total),'2'))
-    #             item11.setFlags(flags)
-    #             brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #             brush.setStyle(QtCore.Qt.SolidPattern)
-    #             item11.setBackground(brush)
-    #             item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #             item33=QTableWidgetItem(Moneda)
-    #             item33.setFlags(flags)
-    #             brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #             brush.setStyle(QtCore.Qt.SolidPattern)
-    #             item33.setBackground(brush)
-    #             item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #     except Exception as e:
-    #         mensajeDialogo("error", "Error", "Se necesita llenar los campos indicados")
-    #         print(e)
-    #
-    # def Condicion2(self):
-    #     condicion=self.tbwCond_Pos.cellWidget(self.tbwCond_Pos.currentRow(),0).currentText()
-    #     flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #     try:
-    #         global total2
-    #         if condicion=='IGV':
-    #             Total=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow()-1,3).text()
-    #             Total=Total.replace(",","")
-    #             porcentaje=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),1).text()
-    #             if porcentaje!="":
-    #                 n1 = float(Total)
-    #                 n2 = float(porcentaje)
-    #                 res = eval("n1 * (n2 / 100)")
-    #
-    #                 info = QTableWidgetItem(porcentaje)
-    #                 info.setFlags(flags)
-    #                 info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 1, info)
-    #
-    #                 flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #                 item1=QTableWidgetItem(formatearDecimal(str(res),'2'))
-    #                 item1.setFlags(flags)
-    #                 item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #                 item3=QTableWidgetItem(Moneda)
-    #                 item3.setFlags(flags)
-    #                 item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #                 total2=float(Total)+float(res)
-    #                 flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #                 item11=QTableWidgetItem(formatearDecimal(str(total2),'2'))
-    #                 item11.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item11.setBackground(brush)
-    #                 item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #                 item33=QTableWidgetItem(Moneda)
-    #                 item33.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item33.setBackground(brush)
-    #                 item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #         else:
-    #             CIs=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),3).text()
-    #             item1=QTableWidgetItem(formatearDecimal(str(CIs),'2'))
-    #             item1.setFlags(flags)
-    #             item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #             item3=QTableWidgetItem(Moneda)
-    #             item3.setFlags(flags)
-    #             item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #             total2=float(total2)+float(CIs)
-    #             item11=QTableWidgetItem(formatearDecimal(str(total2),'2'))
-    #             item11.setFlags(flags)
-    #             brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #             brush.setStyle(QtCore.Qt.SolidPattern)
-    #             item11.setBackground(brush)
-    #             item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #             item33=QTableWidgetItem(Moneda)
-    #             item33.setFlags(flags)
-    #             brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #             brush.setStyle(QtCore.Qt.SolidPattern)
-    #             item33.setBackground(brush)
-    #             item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #             self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #     except Exception as e:
-    #         mensajeDialogo("error", "Error", "Se necesita llenar los campos indicados")
-    #         print(e)
-    #
-    # def Condicion3(self):
-    #     condicion=self.tbwCond_Pos.cellWidget(self.tbwCond_Pos.currentRow(),0).currentText()
-    #     flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    #     try:
-    #         global total2
-    #         if condicion=='IGV':
-    #             Total=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow()-1,3).text()
-    #             Total=Total.replace(",","")
-    #             porcentaje=self.tbwCond_Pos.item(self.tbwCond_Pos.currentRow(),1).text()
-    #             if porcentaje!="":
-    #                 n1 = float(Total)
-    #                 n2 = float(porcentaje)
-    #                 res = eval("n1 * (n2 / 100)")
-    #
-    #                 info = QTableWidgetItem(porcentaje)
-    #                 info.setFlags(flags)
-    #                 info.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 1, info)
-    #
-    #                 item1=QTableWidgetItem(formatearDecimal(str(res),'2'))
-    #                 item1.setFlags(flags)
-    #                 item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 3, item1)
-    #
-    #                 item3=QTableWidgetItem(Moneda)
-    #                 item3.setFlags(flags)
-    #                 item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow(), 4, item3)
-    #
-    #                 total2=float(Total)+float(res)
-    #                 item11=QTableWidgetItem(formatearDecimal(str(total2),'2'))
-    #                 item11.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item11.setBackground(brush)
-    #                 item11.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 3, item11)
-    #
-    #                 item33=QTableWidgetItem(Moneda)
-    #                 item33.setFlags(flags)
-    #                 brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-    #                 brush.setStyle(QtCore.Qt.SolidPattern)
-    #                 item33.setBackground(brush)
-    #                 item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-    #                 self.tbwCond_Pos.setItem(self.tbwCond_Pos.currentRow()+1, 4, item33)
-    #
-    #     except Exception as e:
-    #         mensajeDialogo("error", "Error", "Se necesita llenar los campos indicados")
-    #         print(e)
+            self.leVN_ID.clear()
+            self.leVN_ID.setText(Valor)
+            self.leVN_II.clear()
+
 
     def Grabar(self):
         Hora=datetime.now().strftime("%H:%M:%S.%f")
