@@ -1532,129 +1532,46 @@ def cargarInter(tw,sql):
     else:
         mensajeDialogo("informacion","Informacion","No se encontraron interlocutores registrados, verifique")
 
-def condPos(self,tw,sql,Cond_Comp,Cond_Comp1,Cond_Comp2,Cond_Comp3,dicCond_Comp,Precio,Valor,Moneda,Tipo_Pedido):
+def condPos(self,tbw,tbw2,sql,sql2):
     informacion=consultarSql(sql)
+    informacion_2=consultarSql(sql2)
     flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-    if informacion!=[]:
-        row=0
+
+    if informacion!=[] and informacion_2!=[]:
+        row = 0
         for fila in informacion:
-            for k,v in dicCond_Comp.items():
-                if fila[0]==v:
-                    condcomp=k
-            if int(condcomp)<6:
-                if tw.rowCount()-3<=row:
-                    tw.insertRow(tw.rowCount()-3)
-                cb = QComboBox(tw)
-                tw.setCellWidget(row, 0, cb)
-                insertarDatos(cb,Cond_Comp)
-                tw.cellWidget(row, 0).setCurrentText(fila[0])
-                font = QtGui.QFont()
-                font.setPointSize(12)
-                cb.setFont(font)
-                tw.resizeColumnToContents(0)
-                tw.cellWidget(row, 0).setEnabled(False)
+            col = 0
+            for i in fila:
+                if i == '0.00':
+                    i = ""
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                insertarFila(col,item,[2,3],[0],[1,4])
+                if tbw.rowCount()<=row:
+                    tbw.insertRow(tbw.rowCount())
+                tbw.setItem(row, col, item)
+                col += 1
+            row += 1
 
-                col=1
-                for i in fila:
-                    if i=='0.00':
-                        i=""
-                    if i!=fila[0]:
-                        celda=QTableWidgetItem(i)
-                        celda.setFlags(flags)
-                        celda.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-                        if tw.rowCount()-3<=row:
-                            tw.insertRow(tw.rowCount()-3)
-                        tw.setItem(row, col, celda)
-                        col += 1
-                row+=1
+        row_2 = 0
+        for fila in informacion_2:
+            col_2 = 0
+            for i in fila:
+                if i == '0.00':
+                    i = ""
+                item=QTableWidgetItem(i)
+                item.setFlags(flags)
+                insertarFila(col_2,item,[2,3],[0],[1,4])
+                if tbw2.rowCount()<=row_2:
+                    tbw2.insertRow(tbw2.rowCount())
+                tbw2.setItem(row_2, col_2, item)
+                col_2 += 1
+            row_2 += 1
 
-            else:
-                row+=1
-                if tw.rowCount()-1<=row:
-                    tw.insertRow(tw.rowCount()-1)
-                cb = QComboBox(tw)
-                tw.setCellWidget(row, 0, cb)
-                insertarDatos(cb,Cond_Comp)
-                tw.cellWidget(row, 0).setCurrentText(fila[0])
-                font = QtGui.QFont()
-                font.setPointSize(12)
-                cb.setFont(font)
-                tw.resizeColumnToContents(0)
-                tw.cellWidget(row, 0).setEnabled(False)
-
-                col=1
-                for i in fila:
-                    if i=='0.00':
-                        i=""
-                    if i!=fila[0]:
-                        celda=QTableWidgetItem(i)
-                        celda.setFlags(flags)
-                        celda.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-                        if tw.rowCount()-1<=row:
-                            tw.insertRow(tw.rowCount()-1)
-                        tw.setItem(row, col, celda)
-                        col += 1
+        self.CalcularValores()
 
     else:
-
-        cb0 = QComboBox(tw)
-        tw.setCellWidget(0, 0, cb0)
-        insertarDatos(cb0,Cond_Comp1)
-        cb0.setCurrentIndex(0)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        cb0.setFont(font)
-        tw.resizeColumnToContents(0)
-
-        item1=QTableWidgetItem(Precio)
-        item1.setFlags(flags)
-        item1.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        tw.setItem(0, 2, item1)
-
-        item2=QTableWidgetItem(Valor)
-        item2.setFlags(flags)
-        item2.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        tw.setItem(0, 3, item2)
-
-        item3=QTableWidgetItem(Moneda)
-        item3.setFlags(flags)
-        item3.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        tw.setItem(0, 4, item3)
-
-        item22=QTableWidgetItem(Valor)
-        item22.setFlags(flags)
-        brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        item22.setBackground(brush)
-        item22.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        tw.setItem(1, 3, item22)
-
-        item33=QTableWidgetItem(Moneda)
-        item33.setFlags(flags)
-        brush = QtGui.QBrush(QtGui.QColor(255, 213, 79))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        item33.setBackground(brush)
-        item33.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        tw.setItem(1, 4, item33)
-
-        cb1 = QComboBox(tw)
-        tw.setCellWidget(2, 0, cb1)
-        if Tipo_Pedido=='Importaciones':
-            insertarDatos(cb1,Cond_Comp2)
-            cb1.setCurrentIndex(-1)
-            font = QtGui.QFont()
-            font.setPointSize(12)
-            cb1.setFont(font)
-            tw.resizeColumnToContents(0)
-            cb1.activated.connect(self.Condicion2)
-        else:
-            insertarDatos(cb1,Cond_Comp3)
-            cb1.setCurrentIndex(-1)
-            font = QtGui.QFont()
-            font.setPointSize(12)
-            cb1.setFont(font)
-            tw.resizeColumnToContents(0)
-            cb1.activated.connect(self.Condicion3)
+        self.Inicio()
 
 def buscarTablaPC(self,tbw):
     rango = range(tbw.rowCount())

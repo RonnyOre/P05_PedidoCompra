@@ -142,18 +142,18 @@ class ERP_COMP_P001(QMainWindow):
     def Pedido_Compra(self):
         try:
             data=[]
-            data.append(Cod_Soc)
-            data.append(Nom_Soc)
-            data.append(Cod_Usuario)
-            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text())
-            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text())
+            data.append(Cod_Soc) # Código de Sociedad - data[0]
+            data.append(Nom_Soc) # Nombre de Sociedad - data[1]
+            data.append(Cod_Usuario) # Código de Usuario - data[2]
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text()) # Número de Cotización - data[3]
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()) # Razón Social - data[4]
             Razon_Social=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()
             for k,v in dicProv.items():
                 if Razon_Social==v:
                     Cod_Prov=k
-            data.append(Cod_Prov)
-            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text())
-            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text())
+            data.append(Cod_Prov) # Código de Proveedor - data[5]
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()) # Monto Aprobado - data[6]
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()) # Fecha de Requerimiento - data[7]
 
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(data)

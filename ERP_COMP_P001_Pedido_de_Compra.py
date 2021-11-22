@@ -819,16 +819,24 @@ class Pedido_de_Compra(QMainWindow):
 
     def Cond_Pos(self):
         try:
-            Item=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),0).text()
-            Precio=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),5).text()
-            Valor=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),6).text()
-            Moneda=self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),7).text()
-            Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
-            Nro_Pedido=self.leNro_Pedido.text()
-            Estado_Pedido=self.leEstado.text()
-            orgcomp=self.cbOrg_Compra.currentText()
+            data=[]
+            data.append(Data[0]) # Código de Sociedad - data[0]
+            data.append(Data[1]) # Nombre de Sociedad - data[1]
+            data.append(Data[2]) # Código de Usuario - data[2]
+            data.append(Data[3]) # Número de Cotización - data[3]
+            data.append(Data[4]) # Razón Social - data[4]
+            data.append(Data[5]) # Código de Proveedor - data[5]
+            data.append(self.leNro_Pedido.text()) # Número de Pedido - data[6]
+            data.append(self.cbTipo_Pedido.currentText()) # Tipo de Pedido - data[7]
+            data.append(self.cbOrg_Compra.currentText()) # Organización de compra - data[8]
+            data.append(self.leEstado.text()) # Estado de Pedido - data[9]
+            data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),0).text()) # Item - data[10]
+            data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),5).text()) # Precio - data[11]
+            data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),6).text()) # Total_Parcial - data[12]
+            data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),7).text()) # Moneda - data[13]
+
             self.cp=Condiciones_Posicion()
-            self.cp.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido,Item,Precio,Valor,Moneda)
+            self.cp.datosCabecera(data)
             self.cp.showMaximized()
         except Exception as e:
             mensajeDialogo("error", "Error", "No se selecciono ninguna posición, verifique")

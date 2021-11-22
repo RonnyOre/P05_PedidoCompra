@@ -25,47 +25,32 @@ class Condiciones_Posicion(QMainWindow):
         self.pbAgregar.clicked.connect(self.Tabla)
         self.pbLimpiar.clicked.connect(self.Limpiar)
 
-    def datosCabecera(self,codsoc,codusuario,nrocotiza,razonsocial,codprov,nropedido,descrip_tipo_pedido,nomsoc,orgcomp,estadopedido,item,precio,valor,moneda):
+    def datosCabecera(self,data):
 
-        global Cod_Soc,Nom_Soc,Cod_Usuario,Nro_Cotiza,Razon_Social,Cod_Prov,Nro_Pedido,Tipo_Pedido,Org_Compra,Fecha,Año,dicPlanta,Estado_Pedido,Item,Precio,Valor,Moneda
+        global Data,Fecha,Año,dicCond_Comp,Cond_Comp,Cond_Comp1,dicMoneda
 
-        Cod_Soc=codsoc
-        Cod_Usuario=codusuario
-        Nro_Cotiza=nrocotiza
-        Razon_Social=razonsocial
-        Cod_Prov=codprov
-        Nro_Pedido=nropedido
-        Tipo_Pedido=descrip_tipo_pedido
-        Org_Compra=orgcomp
-        Nom_Soc=nomsoc
-        Estado_Pedido=estadopedido
-        Item=item
-        Precio=precio
-        Valor=valor
-        Moneda=moneda
+        Data=data
 
         Fecha=datetime.now().strftime("%Y-%m-%d")
         now = datetime.now()
         Año=str(now.year)
 
-        self.leNro_Cotizacion.setText(Nro_Cotiza)
-        self.cbProveedor.addItem(Cod_Prov)
-        self.leRazon_Social.setText(Razon_Social)
-        self.leEstado.setText(Estado_Pedido)
+        self.leNro_Cotizacion.setText(Data[3])
+        self.cbProveedor.addItem(Data[5])
+        self.leRazon_Social.setText(Data[4])
+        self.leEstado.setText(Data[9])
         fecha=formatearFecha(Fecha)
         self.leFecha_Pedido.setText(fecha)
-        self.leNro_Pedido.setText(Nro_Pedido)
-        self.leTipo_Pedido.setText(Tipo_Pedido)
-        self.leEmpresa.setText(Nom_Soc)
-        self.cbOrg_Compra.addItem(Org_Compra)
+        self.leNro_Pedido.setText(Data[6])
+        self.leTipo_Pedido.setText(Data[7])
+        self.leEmpresa.setText(Data[1])
+        self.cbOrg_Compra.addItem(Data[8])
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
-        cargarLogo(self.lbLogo_Soc, Cod_Soc)
+        cargarLogo(self.lbLogo_Soc, Data[0])
         cargarIcono(self, 'erp')
         cargarIcono(self.pbSalir, 'salir')
         cargarIcono(self.pbGrabar, 'grabar')
-
-        global dicCond_Comp,Cond_Comp,Cond_Comp1,dicMoneda
 
         Cond_Comp = consultarSql(sqlCond_Comp)
         dicCond_Comp={}
@@ -79,22 +64,32 @@ class Condiciones_Posicion(QMainWindow):
         for m in moneda:
             dicMoneda[m[0]]=m[1]
 
-        # sqlCondPos='''SELECT b.Descrip_Condicion, a.Porcentaje, a.Cantidad, a.Valor_Condicion, c.Descrip_moneda FROM TAB_COMP_012_Condiciones_de_Pedido_de_Compras a LEFT JOIN TAB_COMP_011_Tipos_de_Condiciones_de_Compras b ON a.Tipo_Cond_compra=b.Tipo_Cond_compra LEFT JOIN TAB_SOC_008_Monedas c ON a.Moneda=c.Cod_moneda
-        # WHERE a.Cod_Soc='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s' AND a.Clase_condicion='2' AND a.Item_Pedido='%s';'''%(Cod_Soc,Nro_Pedido,Año,Item)
-        # condPos(self,self.tbwCond_Pos,sqlCondPos,Cond_Comp,Cond_Comp1,Cond_Comp2,Cond_Comp3,dicCond_Comp,Precio,Valor,Moneda,Tipo_Pedido)
+        sqlCondPos='''SELECT b.Descrip_Condicion, a.Porcentaje, a.Cantidad, a.Valor_Condicion, c.Descrip_moneda
+        FROM TAB_COMP_012_Condiciones_de_Pedido_de_Compras a
+        LEFT JOIN TAB_COMP_011_Tipos_de_Condiciones_de_Compras b ON a.Tipo_Cond_compra=b.Tipo_Cond_compra
+        LEFT JOIN TAB_SOC_008_Monedas c ON a.Moneda=c.Cod_moneda
+        WHERE a.Cod_Soc='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s' AND a.Clase_condicion='2' AND a.Tipo_Cond_compra<'06' AND a.Item_Pedido='%s';'''%(Data[0],Data[6],Año,Data[10])
 
-        self.Inicio()
+        sqlCondPos_2='''SELECT b.Descrip_Condicion, a.Porcentaje, a.Cantidad, a.Valor_Condicion, c.Descrip_moneda
+        FROM TAB_COMP_012_Condiciones_de_Pedido_de_Compras a
+        LEFT JOIN TAB_COMP_011_Tipos_de_Condiciones_de_Compras b ON a.Tipo_Cond_compra=b.Tipo_Cond_compra
+        LEFT JOIN TAB_SOC_008_Monedas c ON a.Moneda=c.Cod_moneda
+        WHERE a.Cod_Soc='%s' AND a.Nro_Pedido='%s' AND a.Año_Pedido='%s' AND a.Clase_condicion='2' AND a.Tipo_Cond_compra>'05' AND a.Item_Pedido='%s';'''%(Data[0],Data[6],Año,Data[10])
+
+        condPos(self,self.tbwCond_Pos,self.tbwCond_Pos_2,sqlCondPos,sqlCondPos_2)
+
+        # self.Inicio()
 
     def Inicio(self):
 
-        if Tipo_Pedido!='Importaciones':
+        if Data[7]!='Importaciones':
             insertarDatos(self.cbCondicion,Cond_Comp1)
             self.cbCondicion.setCurrentIndex(-1)
         else:
             insertarDatos(self.cbCondicion,Cond_Comp)
             self.cbCondicion.setCurrentIndex(-1)
 
-        Lista=['Precio','', Precio, Valor, Moneda]
+        Lista=['Precio','', Data[11], Data[12], Data[13]]
         col = 0
         for i in Lista:
             item=QTableWidgetItem(i)
@@ -105,7 +100,29 @@ class Condiciones_Posicion(QMainWindow):
             self.tbwCond_Pos.setItem(0, col, item)
             col += 1
 
-        self.leVN_ID.setText(Valor)
+        self.leVN_ID.setText(Data[12])
+
+    def CalcularValores(self):
+        dicCondicion={}
+        for i in range(self.tbwCond_Pos.rowCount()):
+            try:
+                dicCondicion[self.tbwCond_Pos.item(i,0).text()]=self.tbwCond_Pos.item(i,3).text().replace(",","")
+            except Exception as e:
+                print(e)
+
+        try:
+            ValorNeto_ID=float(dicCondicion["Precio"])-float(dicCondicion["Descuento 1"])-float(dicCondicion["Descuento 2"])-float(dicCondicion["Descuento 3"])+float(dicCondicion["Transporte"])
+            self.leVN_ID.setText(formatearDecimal(str(ValorNeto_ID),'2'))
+        except Exception as e:
+            print(e)
+
+
+        # dicCondicion2={}
+        # for i in range(self.tbwCond_Pos_2.rowCount()):
+        #     try:
+        #         dicCondicion2[self.tbwCond_Pos_2.item(i,0).text().replace(",","")]=self.tbwCond_Pos_2.item(i,3).text().replace(",","")
+        #     except Exception as e:
+        #         print(e)
 
     def Condicion(self):
         self.lePorcentaje.setReadOnly(False)
@@ -172,28 +189,28 @@ class Condiciones_Posicion(QMainWindow):
                     ValorCondicion=float(ValorNeto)*(float(Porcentaje) / 100)
                     ValorNetoActual=float(ValorNeto)-ValorCondicion
                     fila.append(formatearDecimal(str(ValorCondicion),'2'))
-                    fila.append(Moneda)
+                    fila.append(Data[13])
                     self.CargarData(self.tbwCond_Pos,self.leVN_ID,fila,ValorCondicion,ValorNetoActual)
 
                 if Condicion=='Transporte':
                     ValorCondicion=float(Monto)
                     ValorNetoActual=float(ValorNeto)+ValorCondicion
                     fila.append(formatearDecimal(str(ValorCondicion),'2'))
-                    fila.append(Moneda)
+                    fila.append(Data[13])
                     self.CargarData(self.tbwCond_Pos,self.leVN_ID,fila,ValorCondicion,ValorNetoActual)
 
                 if Condicion=='IGV':
                     ValorCondicion=float(ValorNeto)*(float(Porcentaje) / 100)
                     ValorNetoActual=float(ValorNeto)+ValorCondicion
                     fila.append(formatearDecimal(str(ValorCondicion),'2'))
-                    fila.append(Moneda)
+                    fila.append(Data[13])
                     self.CargarData(self.tbwCond_Pos_2,self.leVN_II,fila,ValorCondicion,ValorNetoActual)
 
                 if Condicion[:3]=='CI.':
                     ValorCondicion=float(Monto)
                     ValorNetoActual=float(ValorNeto_2)+ValorCondicion
                     fila.append(formatearDecimal(str(ValorCondicion),'2'))
-                    fila.append(Moneda)
+                    fila.append(Data[13])
                     self.CargarData(self.tbwCond_Pos_2,self.leVN_II,fila,ValorCondicion,ValorNetoActual)
 
             else:
@@ -246,7 +263,7 @@ class Condiciones_Posicion(QMainWindow):
             for r in range(rows):
                 self.tbwCond_Pos_2.removeRow(0)
 
-            Lista=['Precio','', Precio, Valor, Moneda]
+            Lista=['Precio','', Data[11], Data[12], Data[13]]
             col = 0
             for i in Lista:
                 item=QTableWidgetItem(i)
@@ -258,51 +275,124 @@ class Condiciones_Posicion(QMainWindow):
                 col += 1
 
             self.leVN_ID.clear()
-            self.leVN_ID.setText(Valor)
+            self.leVN_ID.setText(Data[12])
             self.leVN_II.clear()
 
 
     def Grabar(self):
         Hora=datetime.now().strftime("%H:%M:%S.%f")
-        d=self.tbwCond_Pos.rowCount()
-        for i in range(d):
+
+        Detalle=[]
+        nrofilas=self.tbwCond_Pos.rowCount()
+        for i in range(nrofilas):
+            fila=[]
+            fila.append(Data[0])
+            fila.append(Data[6])
+            fila.append(Año)
+            fila.append(2)
+
+            tipcondcomp=self.tbwCond_Pos.item(i,0).text()
+            for k,v in dicCond_Comp.items():
+                if v==tipcondcomp:
+                    condcomp=k
+
+            fila.append(condcomp)
+            fila.append(Data[10])
+
             try:
-                tipcondcomp=self.tbwCond_Pos.cellWidget(i,0).currentText()
-                for k,v in dicCond_Comp.items():
-                    if v==tipcondcomp:
-                        condcomp=k
-                try:
-                    porcentaje=self.tbwCond_Pos.item(i,1).text()
-                except:
-                    porcentaje=""
-                try:
-                    monto=self.tbwCond_Pos.item(i,2).text()
-                except:
-                    monto=""
-                try:
-                    valor=self.tbwCond_Pos.item(i,3).text()
-                except:
-                    valor=""
-                try:
-                    descripmoneda=self.tbwCond_Pos.item(i,4).text()
-                    for k,v in dicMoneda.items():
-                        if v==descripmoneda:
-                            moneda=k
-                except:
-                    moneda=""
+                porcentaje=self.tbwCond_Pos.item(i,1).text().replace(",","")
+            except:
+                porcentaje=""
 
-                sql='''INSERT INTO TAB_COMP_012_Condiciones_de_Pedido_de_Compras(Cod_Soc, Nro_Pedido, Año_Pedido, Clase_condicion, Tipo_Cond_compra, Item_Pedido, Porcentaje, Cantidad, Valor_Condicion, Moneda, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Cod_Soc,Nro_Pedido,Año,2,condcomp,Item,porcentaje,monto,valor,moneda,Fecha,Hora,Cod_Usuario)
-                respuesta=ejecutarSql(sql)
+            fila.append(porcentaje)
 
-            except Exception as e:
-                continue
-                print(e)
+            try:
+                monto=self.tbwCond_Pos.item(i,2).text().replace(",","")
+            except:
+                monto=""
+
+            fila.append(monto)
+
+            try:
+                valor=self.tbwCond_Pos.item(i,3).text().replace(",","")
+            except:
+                valor=""
+
+            fila.append(valor)
+
+            try:
+                descripmoneda=self.tbwCond_Pos.item(i,4).text()
+                for k,v in dicMoneda.items():
+                    if v==descripmoneda:
+                        moneda=k
+            except:
+                moneda=""
+
+            fila.append(moneda)
+            fila.append(Fecha)
+            fila.append(Hora)
+            fila.append(Data[2])
+            Detalle.append(tuple(fila))
+
+        nrofilas2=self.tbwCond_Pos_2.rowCount()
+        for i in range(nrofilas2):
+            fila2=[]
+            fila2.append(Data[0])
+            fila2.append(Data[6])
+            fila2.append(Año)
+            fila2.append(2)
+
+            tipcondcomp=self.tbwCond_Pos_2.item(i,0).text()
+            for k,v in dicCond_Comp.items():
+                if v==tipcondcomp:
+                    condcomp=k
+
+            fila2.append(condcomp)
+            fila2.append(Data[10])
+
+            try:
+                porcentaje=self.tbwCond_Pos_2.item(i,1).text().replace(",","")
+            except:
+                porcentaje=""
+
+            fila2.append(porcentaje)
+
+            try:
+                monto=self.tbwCond_Pos_2.item(i,2).text().replace(",","")
+            except:
+                monto=""
+
+            fila2.append(monto)
+
+            try:
+                valor=self.tbwCond_Pos_2.item(i,3).text().replace(",","")
+            except:
+                valor=""
+
+            fila2.append(valor)
+
+            try:
+                descripmoneda=self.tbwCond_Pos_2.item(i,4).text()
+                for k,v in dicMoneda.items():
+                    if v==descripmoneda:
+                        moneda=k
+            except:
+                moneda=""
+
+            fila2.append(moneda)
+            fila2.append(Fecha)
+            fila2.append(Hora)
+            fila2.append(Data[2])
+            Detalle.append(tuple(fila2))
+
+        sql='''INSERT INTO TAB_COMP_012_Condiciones_de_Pedido_de_Compras(Cod_Soc, Nro_Pedido, Año_Pedido, Clase_condicion, Tipo_Cond_compra, Item_Pedido, Porcentaje, Cantidad, Valor_Condicion, Moneda, Fecha_Reg, Hora_Reg, Usuario_Reg)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
+        respuesta=ejecutarSqlDB(sql,Detalle)
 
         if respuesta['respuesta']=='correcto':
             mensajeDialogo("informacion", "Información", "Las Condiciones de Posicion se han grabado correctamente")
 
-        elif respuesta['respuesta']=='incorrecto':
+        else:
             mensajeDialogo("error", "Error", "Ocurrio un problema, comuniquese con soporte")
 
     def Salir(self):
