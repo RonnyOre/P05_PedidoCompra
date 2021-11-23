@@ -1540,6 +1540,9 @@ def condPos(self,tbw,tbw2,sql,sql2):
     if informacion!=[] and informacion_2!=[]:
         row = 0
         for fila in informacion:
+            fila[1]=formatearDecimal(fila[1],'2')
+            fila[2]=formatearDecimal(fila[2],'2')
+            fila[3]=formatearDecimal(fila[3],'2')
             col = 0
             for i in fila:
                 if i == '0.00':
@@ -1555,6 +1558,9 @@ def condPos(self,tbw,tbw2,sql,sql2):
 
         row_2 = 0
         for fila in informacion_2:
+            fila[1]=formatearDecimal(fila[1],'2')
+            fila[2]=formatearDecimal(fila[2],'2')
+            fila[3]=formatearDecimal(fila[3],'2')
             col_2 = 0
             for i in fila:
                 if i == '0.00':

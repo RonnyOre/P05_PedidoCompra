@@ -219,16 +219,16 @@ class Consulta_PC(QMainWindow):
     def Pedido_Compra(self):
         try:
             data=[]
-            data.append(Cod_Soc)
-            data.append(Nom_Soc)
-            data.append(Cod_Usuario)
-            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text())
-            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text())
+            data.append(Cod_Soc) # Código de Sociedad - data[0]
+            data.append(Nom_Soc) # Nombre de Sociedad - data[1]
+            data.append(Cod_Usuario) # Código de Usuario - data[2]
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),1).text()) # Número de Cotización - data[3]
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()) # Razón social - data[4]
             Razon_Social=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),4).text()
             for k,v in dicProv.items():
                 if Razon_Social==v:
                     Cod_Prov=k
-            data.append(Cod_Prov)
+            data.append(Cod_Prov) # Código de Proveedor - data[5]
 
             Nro_Pedido=self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()
 
@@ -248,9 +248,9 @@ class Consulta_PC(QMainWindow):
                 Monto_Aprobado=""
                 Fecha_Req=""
 
-            data.append(Monto_Aprobado)
-            data.append(Fecha_Req)
-
+            data.append(Monto_Aprobado) # Monto Aprobado - data[6]
+            data.append(Fecha_Req) # Fecha de Requeriemiento - data[7]
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()) # Número de Pedido - data[8]
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(data)
             self.pc.pbEnviar.clicked.connect(self.Cargar)

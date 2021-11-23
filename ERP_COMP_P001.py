@@ -154,6 +154,7 @@ class ERP_COMP_P001(QMainWindow):
             data.append(Cod_Prov) # Código de Proveedor - data[5]
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()) # Monto Aprobado - data[6]
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()) # Fecha de Requerimiento - data[7]
+            data.append("") # Número de Pedido - data[8]
 
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(data)

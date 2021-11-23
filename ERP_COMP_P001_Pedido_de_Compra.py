@@ -21,7 +21,7 @@ dicTip_Ped={'1':'Compra Nacional','2':'Importaciones','3':'Traslados entre Plant
 dicEstado={'1':'Proceso Emisión','2':'Enviado a Prov.','3':'Saldo Pendiente','4':'Recepcionada','9':'Eliminado'}
 
 sqlMoneda="SELECT Cod_moneda,Descrip_moneda FROM TAB_SOC_008_Monedas"
-sqlProv="SELECT a.Cod_prov, b.Nombre FROM TAB_PROV_001_Registro_de_Proveedores a LEFT JOIN TAB_SOC_009_Ubigeo b ON a.País=b.Cod_Pais WHERE b.Cod_Depart_Region='0' AND b.Cod_Provincia='0' AND b.Cod_Distrito='0' AND a.Estado_Prov='1'"
+sqlProv="SELECT a.Cod_prov, b.Nombre FROM TAB_PROV_001_Registro_de_Proveedores a LEFT JOIN TAB_SOC_009_Ubigeo_NuevaVersion b ON a.País=b.Cod_Pais WHERE b.Cod_Depart_Region='00' AND b.Cod_Provincia='00' AND b.Cod_Distrito='00' AND a.Estado_Prov='1'"
 
 class TextoCabecera(QDialog):
     def __init__(self,Nro_Ped):
@@ -244,6 +244,8 @@ class Pedido_de_Compra(QMainWindow):
         global dict_textoPosicion
         dict_textoPosicion = {}
 
+        print(dicPaisProv)
+
     def datosCabecera(self,data):
 
         global Data,Fecha,Año
@@ -282,7 +284,7 @@ class Pedido_de_Compra(QMainWindow):
         sqlCabPed='''SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda
         FROM TAB_COMP_004_Pedido_Compra a
         LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
-        WHERE a.Cod_Emp='%s'AND a.Año_Pedido='%s' AND a.Nro_Pedido='%s';'''%(Data[0],Año,Data[3])
+        WHERE a.Cod_Emp='%s'AND a.Año_Pedido='%s' AND a.Nro_Pedido='%s';'''%(Data[0],Año,Data[8])
         CabPed=convlist(sqlCabPed)
 
         insertarDatos(self.cbOrg_Compra, OrgComp)
@@ -299,7 +301,6 @@ class Pedido_de_Compra(QMainWindow):
             dicPlanta[p[0]]=p[1]
 
         if CabPed!=[]:
-
             for k,v in dicTip_Ped.items():
                 if CabPed[2]==k:
                     TipoPedido=v

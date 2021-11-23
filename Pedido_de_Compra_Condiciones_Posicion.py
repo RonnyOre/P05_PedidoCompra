@@ -103,26 +103,43 @@ class Condiciones_Posicion(QMainWindow):
         self.leVN_ID.setText(Data[12])
 
     def CalcularValores(self):
-        dicCondicion={}
-        for i in range(self.tbwCond_Pos.rowCount()):
-            try:
-                dicCondicion[self.tbwCond_Pos.item(i,0).text()]=self.tbwCond_Pos.item(i,3).text().replace(",","")
-            except Exception as e:
-                print(e)
-
         try:
-            ValorNeto_ID=float(dicCondicion["Precio"])-float(dicCondicion["Descuento 1"])-float(dicCondicion["Descuento 2"])-float(dicCondicion["Descuento 3"])+float(dicCondicion["Transporte"])
-            self.leVN_ID.setText(formatearDecimal(str(ValorNeto_ID),'2'))
+            Lista=[]
+            for i in range(self.tbwCond_Pos.rowCount()):
+                try:
+                    Lista.append(self.tbwCond_Pos.item(i,3).text().replace(",",""))
+                except Exception as e:
+                    print(e)
+
+            n=len(Lista)
+            suma=0
+            for i in Lista:
+                suma += float(i)
+
+            Calculo=float(Lista[0]) + float(Lista[n-1])
+            Descuento = suma - (Calculo)
+
+            ValorNeto_ID = Calculo - Descuento
+
+            self.leVN_ID.setText(formatearDecimal(str(ValorNeto_ID), '2'))
+
+            Lista2=[]
+            for i in range(self.tbwCond_Pos_2.rowCount()):
+                try:
+                    Lista2.append(self.tbwCond_Pos_2.item(i,3).text().replace(",",""))
+                except Exception as e:
+                    print(e)
+
+            suma2=0
+            for i in Lista2:
+                suma2 += float(i)
+
+            ValorNeto_II = ValorNeto_ID + suma2
+
+            self.leVN_II.setText(formatearDecimal(str(ValorNeto_II), '2'))
+
         except Exception as e:
             print(e)
-
-
-        # dicCondicion2={}
-        # for i in range(self.tbwCond_Pos_2.rowCount()):
-        #     try:
-        #         dicCondicion2[self.tbwCond_Pos_2.item(i,0).text().replace(",","")]=self.tbwCond_Pos_2.item(i,3).text().replace(",","")
-        #     except Exception as e:
-        #         print(e)
 
     def Condicion(self):
         self.lePorcentaje.setReadOnly(False)
