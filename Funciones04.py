@@ -1446,8 +1446,7 @@ def CargarPedComp(self,tw,sql,Cod_Soc,Año,Nro_Doc):
             for i in fila:
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
-                insertarFila(col,item,[4,5,6],[2,7,8,9],[0,1,3])
-                # item.setTextAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+                insertarFila(col,item,[4,5,6,10],[2,7,8,9],[0,1,3])
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row, col, item)

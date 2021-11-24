@@ -344,18 +344,19 @@ class Pedido_de_Compra(QMainWindow):
             for v in dicTip_Ped.values():
                 self.cbTipo_Pedido.addItem(v)
 
-            if dicPaisProv[Data[5]]=='PERU':
-                self.cbTipo_Pedido.setCurrentIndex(0)
-            elif dicPaisProv[Data[5]]!='PERU':
+            if Data[5] not in dicPaisProv:
                 self.cbTipo_Pedido.setCurrentIndex(1)
+            elif dicPaisProv[Data[5]]=='PERU':
+                self.cbTipo_Pedido.setCurrentIndex(0)
+            # elif dicPaisProv[Data[5]]!='PERU':
 
             fecha=formatearFecha(Fecha)
             self.leFecha_Pedido.setText(fecha)
 
-            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm
+            sqlTabla = '''SELECT d.Cod_Mat, c.Descrip_Idioma, d.Unid_Cot, d.Cant_Asignada as primero, d.Precio_Cotiza, (d.Cant_Asignada*d.Precio_Cotiza),m.Descrip_moneda, p.Nomb_Planta,n.Nomb_Alm,d.Cant_Asignada as segundo
             FROM TAB_COMP_002_Detalle_Cotización_de_Compra d
             LEFT JOIN TAB_COMP_001_Cotización_Compra a ON d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov
-            LEFT JOIN TAB_MAT_011_Descripcion_Idiomas c ON d.Cod_Mat= c.Cod_Mat AND d.Cod_Idioma=c.Cod_Idioma
+            LEFT JOIN TAB_MAT_011_Descripcion_Idiomas c ON d.Cod_Mat = c.Cod_Mat AND d.Cod_Idioma = c.Cod_Idioma
             LEFT JOIN TAB_SOLP_002_Detalle_Solicitud_Pedido s ON d.Año=s.Año AND d.Item_SOLP = s.Item_Solp AND d.Cod_Soc=s.Cod_Soc AND d.Cod_Mat=s.Cod_Mat AND s.Nro_Solp=a.Nro_Solp
             LEFT JOIN TAB_SOC_008_Monedas m ON s.Moneda=m.Cod_moneda
             LEFT JOIN TAB_SOC_002_Planta p ON s.Cod_Soc=p.Cod_soc AND s.Centro=p.Cod_Planta
@@ -465,10 +466,8 @@ class Pedido_de_Compra(QMainWindow):
                     for k,v in diccAlmacen.items():
                         if NombreAlmacen==v:
                             Almacen=k
-                    try:
-                        Lote=self.tbwPed_Comp.item(row,10).text()
-                    except:
-                        Lote=''
+
+                    Saldo_Pendiente=self.tbwPed_Comp.item(row,10).text().replace(",","")
 
                     Good_Recep='1'
 
@@ -482,8 +481,8 @@ class Pedido_de_Compra(QMainWindow):
                     except Exception as e:
                         print(e)
 
-                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Lote_Mat, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Lote,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
+                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Cant_Entregado, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
+                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Saldo_Pendiente,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
                     respuesta=ejecutarSql(sqlDetalle)
 
                     sqlSelect="SELECT Stock_Transito_Compra,Cod_Mat FROM TAB_MAT_002_Stock_Almacen WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Data[0],Centro,Almacen,Cod_Mat)
