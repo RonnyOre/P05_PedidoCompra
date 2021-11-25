@@ -278,16 +278,12 @@ class Pedido_de_Compra(QMainWindow):
 
         global dicPlanta
 
-        sqlOrgComp="SELECT Nomb_Comp,Cod_Org_Comp FROM TAB_SOC_004_Org_Compra WHERE Cod_Soc='%s'"%(Data[0])
-        OrgComp=consultarSql(sqlOrgComp)
-
-        sqlCabPed='''SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda
+        sqlCabPed='''SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda, c.Nomb_Comp
         FROM TAB_COMP_004_Pedido_Compra a
         LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
+        LEFT JOIN TAB_SOC_004_Org_Compra c ON a.Cod_Emp=c.Cod_Soc AND a.Cod_Org_Comp=c.Cod_Org_Comp
         WHERE a.Cod_Emp='%s'AND a.Año_Pedido='%s' AND a.Nro_Pedido='%s';'''%(Data[0],Año,Data[8])
         CabPed=convlist(sqlCabPed)
-
-        insertarDatos(self.cbOrg_Compra, OrgComp)
 
         self.leEmpresa.setText(Data[1])
         self.leNro_Cotizacion.setText(Data[3])
@@ -306,6 +302,7 @@ class Pedido_de_Compra(QMainWindow):
                     TipoPedido=v
             self.cbTipo_Pedido.addItem(TipoPedido)
             self.cbTipo_Pedido.setEnabled(False)
+            self.cbTipo_Pedido.setStyleSheet("color: rgb(0,0,0);\n""background-color: rgb(255,255,255);")
 
             self.leNro_Pedido.setText(CabPed[0])
 
@@ -317,8 +314,8 @@ class Pedido_de_Compra(QMainWindow):
             fecha=formatearFecha(CabPed[3])
             self.leFecha_Pedido.setText(fecha)
 
-            self.cbOrg_Compra.setCurrentIndex(0)
-            self.cbOrg_Compra.setEnabled(False)
+            self.leOrg_Compra.setText(CabPed[7])
+            self.leOrg_Compra.setReadOnly(True)
 
             if TipoPedido=='Importaciones':
                 self.pbDat_Import.setEnabled(True)
@@ -339,7 +336,13 @@ class Pedido_de_Compra(QMainWindow):
             CargarPedComp(self,self.tbwPed_Comp,sqlTabla,Data[0],Año,CabPed[0])
 
         else:
-            self.cbOrg_Compra.setCurrentIndex(0)
+            sqlOrgComp='''SELECT b.Nomb_Comp
+            FROM TAB_COMP_001_Cotización_Compra a
+            LEFT JOIN TAB_SOC_004_Org_Compra b ON a.Cod_Soc=b.Cod_Soc AND a.Cod_Org_Comp=b.Cod_Org_Comp
+            WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Cotiza='%s' AND a.Cod_Prov='%s';'''%(Data[0], Año, Data[3], Data[5])
+            orgcomp=convlist(sqlOrgComp)
+
+            self.leOrg_Compra.setText(orgcomp[0])
 
             for v in dicTip_Ped.values():
                 self.cbTipo_Pedido.addItem(v)
@@ -415,7 +418,7 @@ class Pedido_de_Compra(QMainWindow):
                 self.pbCon_Pos.setEnabled(True)
                 self.pbGrabar.setEnabled(False)
                 self.cbTipo_Pedido.setEnabled(False)
-                self.cbOrg_Compra.setEnabled(False)
+                self.cbTipo_Pedido.setStyleSheet("color: rgb(0,0,0);\n""background-color: rgb(255,255,255);")
 
                 if descrip_tipo_pedido=='Importaciones':
                     self.pbDat_Import.setEnabled(True)
@@ -532,8 +535,7 @@ class Pedido_de_Compra(QMainWindow):
         Nro_Cotizacion=self.leNro_Cotizacion.text()
         Nro_Pedido=self.leNro_Pedido.text()
 
-        # if DatosCab==[]:
-        sqlDatosCab2='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
+        sqlDatosCab='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
         FROM TAB_COMP_004_Pedido_Compra a
         LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
         LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor f ON a.Cod_Prov=f.Cod_Prov AND a.Banco_deposito=f.Nro_Correlativo
@@ -541,14 +543,14 @@ class Pedido_de_Compra(QMainWindow):
         LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
         LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
         WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s' AND a.Cod_Prov='%s' AND a.Nro_Pedido='%s';'''%(Data[0], Año, Cod_Prov, Nro_Pedido)
-        DatosCab=convlist(sqlDatosCab2)
+        DatosCab=convlist(sqlDatosCab)
         print(DatosCab)
 
-        sqlFecha_Entrega2='''SELECT MAX(a.Fecha_Ent_Prov)
+        sqlFecha_Entrega='''SELECT MAX(a.Fecha_Ent_Prov)
         FROM TAB_COMP_002_Detalle_Cotización_de_Compra a
         LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra b ON a.Cod_Soc=b.Cod_Empresa AND a.Año=b.Año_Pedido AND a.Nro_Cotiza=b.Nro_Cotiza
         WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND b.Nro_Pedido='%s';'''%(Data[0], Año, Cod_Prov, Nro_Pedido)
-        FechaEntrega=convlist(sqlFecha_Entrega2)
+        FechaEntrega=convlist(sqlFecha_Entrega)
         print(FechaEntrega)
 
         sqlTexCab="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(Data[0],Año,Nro_Pedido)
@@ -773,7 +775,7 @@ class Pedido_de_Compra(QMainWindow):
         Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
         Nro_Pedido=self.leNro_Pedido.text()
         Estado_Pedido=self.leEstado.text()
-        orgcomp=self.cbOrg_Compra.currentText()
+        orgcomp=self.leOrg_Compra.text()
         self.di=Datos_Importacion()
         self.di.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.di.showMaximized()
@@ -782,7 +784,7 @@ class Pedido_de_Compra(QMainWindow):
         Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
         Nro_Pedido=self.leNro_Pedido.text()
         Estado_Pedido=self.leEstado.text()
-        orgcomp=self.cbOrg_Compra.currentText()
+        orgcomp=self.leOrg_Compra.text()
         self.cc=Condiciones_Cabecera()
         self.cc.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.cc.showMaximized()
@@ -791,7 +793,7 @@ class Pedido_de_Compra(QMainWindow):
         Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
         Nro_Pedido=self.leNro_Pedido.text()
         Estado_Pedido=self.leEstado.text()
-        orgcomp=self.cbOrg_Compra.currentText()
+        orgcomp=self.leOrg_Compra.text()
         self.int=Interlocutor()
         self.int.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido)
         self.int.showMaximized()
@@ -800,7 +802,7 @@ class Pedido_de_Compra(QMainWindow):
         Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
         Nro_Pedido=self.leNro_Pedido.text()
         Estado_Pedido=self.leEstado.text()
-        orgcomp=self.cbOrg_Compra.currentText()
+        orgcomp=self.leOrg_Compra.text()
         self.de=Depositos()
         self.de.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido,Data[6])
         self.de.showMaximized()
@@ -816,7 +818,7 @@ class Pedido_de_Compra(QMainWindow):
             data.append(Data[5]) # Código de Proveedor - data[5]
             data.append(self.leNro_Pedido.text()) # Número de Pedido - data[6]
             data.append(self.cbTipo_Pedido.currentText()) # Tipo de Pedido - data[7]
-            data.append(self.cbOrg_Compra.currentText()) # Organización de compra - data[8]
+            data.append(self.leOrg_Compra.text()) # Organización de compra - data[8]
             data.append(self.leEstado.text()) # Estado de Pedido - data[9]
             data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),0).text()) # Item - data[10]
             data.append(self.tbwPed_Comp.item(self.tbwPed_Comp.currentRow(),5).text()) # Precio - data[11]

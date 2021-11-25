@@ -533,11 +533,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="cbOrg_Compra">
-          <property name="minimumSize">
+         <widget class="QLineEdit" name="leOrg_Compra">
+          <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>25</height>
+            <width>250</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -547,9 +547,6 @@
           </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
           </property>
          </widget>
         </item>
