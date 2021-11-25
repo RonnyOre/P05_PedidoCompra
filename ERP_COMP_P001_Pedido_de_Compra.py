@@ -485,8 +485,11 @@ class Pedido_de_Compra(QMainWindow):
                         print(e)
 
                     sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Cant_Entregado, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' %(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Saldo_Pendiente,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
+                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');'''%(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Saldo_Pendiente,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
                     respuesta=ejecutarSql(sqlDetalle)
+
+                    sqlUltPrecioComp="UPDATE TAB_MAT_001_Catalogo_Materiales SET Ult_precio_comp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Mat='%s';"%(Precio,Fecha,Hora,Data[2],Data[0],Cod_Mat)
+                    ejecutarSql(sqlUltPrecioComp)
 
                     sqlSelect="SELECT Stock_Transito_Compra,Cod_Mat FROM TAB_MAT_002_Stock_Almacen WHERE Cod_Soc='%s' AND Cod_Planta='%s' AND Cod_Alm='%s' AND Cod_Mat='%s';"%(Data[0],Centro,Almacen,Cod_Mat)
                     select=convlist(sqlSelect)
