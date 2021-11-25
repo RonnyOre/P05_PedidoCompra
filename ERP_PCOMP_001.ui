@@ -370,11 +370,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="cbNro_Cotizacion">
-          <property name="minimumSize">
+         <widget class="QLineEdit" name="leNro_Cotizacion">
+          <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>25</height>
+            <width>150</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -384,9 +384,6 @@
           </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
           </property>
          </widget>
         </item>
@@ -424,11 +421,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="cbProveedor">
-          <property name="minimumSize">
+         <widget class="QLineEdit" name="leProveedor">
+          <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>25</height>
+            <width>50</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -438,9 +435,6 @@
           </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
           </property>
          </widget>
         </item>

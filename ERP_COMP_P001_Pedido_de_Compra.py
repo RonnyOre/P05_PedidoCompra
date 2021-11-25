@@ -233,13 +233,13 @@ class Pedido_de_Compra(QMainWindow):
         self.pbDepositos.setEnabled(False)
         self.pbCon_Pos.setEnabled(False)
 
-        self.leEmpresa.setEnabled(False)
-        self.cbNro_Cotizacion.setEnabled(False)
-        self.cbProveedor.setEnabled(False)
-        self.leRazon_Social.setEnabled(False)
-        self.leFecha_Pedido.setEnabled(False)
-        self.leNro_Pedido.setEnabled(False)
-        self.leEstado.setEnabled(False)
+        self.leEmpresa.setReadOnly(True)
+        self.leNro_Cotizacion.setReadOnly(True)
+        self.leProveedor.setReadOnly(True)
+        self.leRazon_Social.setReadOnly(True)
+        self.leFecha_Pedido.setReadOnly(True)
+        self.leNro_Pedido.setReadOnly(True)
+        self.leEstado.setReadOnly(True)
 
         global dict_textoPosicion
         dict_textoPosicion = {}
@@ -290,8 +290,8 @@ class Pedido_de_Compra(QMainWindow):
         insertarDatos(self.cbOrg_Compra, OrgComp)
 
         self.leEmpresa.setText(Data[1])
-        self.cbNro_Cotizacion.addItem(Data[3])
-        self.cbProveedor.addItem(Data[5])
+        self.leNro_Cotizacion.setText(Data[3])
+        self.leProveedor.setText(Data[5])
         self.leRazon_Social.setText(Data[4])
 
         sqlCodPlanta="SELECT Cod_Planta,Nomb_Planta FROM TAB_SOC_002_Planta WHERE Cod_Soc='%s'"%(Data[0])
@@ -528,40 +528,28 @@ class Pedido_de_Compra(QMainWindow):
     def Imprimir(self):
         global ruta_Pdf
 
-        sqlDatosCab='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
-        FROM TAB_COMP_001_Cotización_Compra a
+        Cod_Prov=self.leProveedor.text()
+        Nro_Cotizacion=self.leNro_Cotizacion.text()
+        Nro_Pedido=self.leNro_Pedido.text()
+
+        # if DatosCab==[]:
+        sqlDatosCab2='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
+        FROM TAB_COMP_004_Pedido_Compra a
         LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
         LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor f ON a.Cod_Prov=f.Cod_Prov AND a.Banco_deposito=f.Nro_Correlativo
         LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON f.Entidad_Bancaria=c.Cod_Banco
         LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
         LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
-        WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND a.Nro_Cotiza='%s';'''%(Data[0], Año, Data[5], Data[3])
-        DatosCab=convlist(sqlDatosCab)
+        WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s' AND a.Cod_Prov='%s' AND a.Nro_Pedido='%s';'''%(Data[0], Año, Cod_Prov, Nro_Pedido)
+        DatosCab=convlist(sqlDatosCab2)
+        print(DatosCab)
 
-        if DatosCab==[]:
-            sqlDatosCab2='''SELECT b.Descrip_moneda, a.Monto_Desc, a.Descuento, e.Descrip_Pago, a.Cuotas_Credito, a.Monto_deposito, a.Fecha_deposito, c.Descrip_Banco, a.Cuenta_Banco, a.Tiempo_Garantia, a.Forma_Garantia,d.Descrip_Envio, a.FValidez_oferta
-            FROM TAB_COMP_004_Pedido_Compra a
-            LEFT JOIN TAB_SOC_008_Monedas b ON a.Moneda=b.Cod_moneda
-            LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor f ON a.Cod_Prov=f.Cod_Prov AND a.Banco_deposito=f.Nro_Correlativo
-            LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON f.Entidad_Bancaria=c.Cod_Banco
-            LEFT JOIN `TAB_SOC_025: Forma de Envío` d ON a.Forma_Envio=d.Forma_Envio
-            LEFT JOIN `TAB_SOC_024: Forma de pago` e ON a.Forma_Pago=e.Forma_Pago
-            WHERE a.Cod_Emp='%s' AND a.Año_Pedido='%s' AND a.Cod_Prov='%s' AND a.Nro_Pedido='%s';'''%(Data[0], Año, Data[5], Data[3])
-            DatosCab=convlist(sqlDatosCab2)
-
-        sqlFecha_Entrega='''SELECT MAX(Fecha_Ent_Prov)
-        FROM TAB_COMP_002_Detalle_Cotización_de_Compra
-        WHERE Cod_Soc='%s' AND Año='%s' AND Cod_Prov='%s' AND Nro_Cotiza='%s';'''%(Data[0], Año, Data[5], Data[3])
-        FechaEntrega=convlist(sqlFecha_Entrega)
-
-        if FechaEntrega[0]==None:
-            sqlFecha_Entrega2='''SELECT MAX(a.Fecha_Ent_Prov)
-            FROM TAB_COMP_002_Detalle_Cotización_de_Compra a
-            LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra b ON a.Cod_Soc=b.Cod_Empresa AND a.Año=b.Año_Pedido AND a.Nro_Cotiza=b.Nro_Cotiza
-            WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND b.Nro_Pedido='%s';'''%(Data[0], Año, Data[5], Data[3])
-            FechaEntrega=convlist(sqlFecha_Entrega2)
-
-        Nro_Pedido=self.leNro_Pedido.text()
+        sqlFecha_Entrega2='''SELECT MAX(a.Fecha_Ent_Prov)
+        FROM TAB_COMP_002_Detalle_Cotización_de_Compra a
+        LEFT JOIN TAB_COMP_005_Detalle_Pedido_de_Compra b ON a.Cod_Soc=b.Cod_Empresa AND a.Año=b.Año_Pedido AND a.Nro_Cotiza=b.Nro_Cotiza
+        WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Cod_Prov='%s' AND b.Nro_Pedido='%s';'''%(Data[0], Año, Cod_Prov, Nro_Pedido)
+        FechaEntrega=convlist(sqlFecha_Entrega2)
+        print(FechaEntrega)
 
         sqlTexCab="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='3' AND Nro_Doc='%s' AND Item_Doc='0'"%(Data[0],Año,Nro_Pedido)
         TexCab=convlist(sqlTexCab)
@@ -637,7 +625,7 @@ class Pedido_de_Compra(QMainWindow):
                     self.set_text_color(0, 0, 0)
                     ## Primera Fila Encabezado
                     self.cell(40, 8, "Ref. Cotización : ", 0, 0,'L')
-                    self.cell(30, 8, Data[3], 0, 0,'C')
+                    self.cell(30, 8, Nro_Cotizacion, 0, 0,'C')
                     self.cell(30)
                     self.cell(30, 8, "Fecha Req. : ", 0, 0,'L')
                     self.cell(30, 8, formatearFecha(Data[7]), 0, 0,'C')
@@ -662,7 +650,7 @@ class Pedido_de_Compra(QMainWindow):
                     self.cell(30, 8, DatosCab[4], 0, 0,'C')
                     self.cell(30)
                     self.cell(30, 8, "Monto Depósito : ", 0, 0,'L')
-                    self.cell(37, 8, formatearDecimal(Data[6],'2'), 0, 2,'C')
+                    self.cell(37, 8, Data[6], 0, 2,'C')
                     ## Cuarta Fila Encabezado
                     self.cell(-220)
                     self.cell(40, 8, "Forma de Envío : ", 0, 0,'L')

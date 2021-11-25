@@ -224,13 +224,16 @@ def insertarFila(col,item,Derecha,Izquierda,Centro):
         item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
 def formatearFecha(fecha):
-    if fecha=="":
-        return ""
-    if fecha==None:
-        return ""
-    fecha=fecha.split("-")
-    fecha.reverse()
-    return "-".join(fecha)
+    try:
+        if fecha=="":
+            return ""
+        if fecha==None:
+            return ""
+        fecha=fecha.split("-")
+        fecha.reverse()
+        return "-".join(fecha)
+    except:
+        return ''
 
 def formatearDecimal(str, nro):
     try:
