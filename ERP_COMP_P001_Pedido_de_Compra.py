@@ -806,13 +806,28 @@ class Pedido_de_Compra(QMainWindow):
         self.int.showMaximized()
 
     def Depos(self):
-        Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
-        Nro_Pedido=self.leNro_Pedido.text()
-        Estado_Pedido=self.leEstado.text()
-        orgcomp=self.leOrg_Compra.text()
-        self.de=Depositos()
-        self.de.datosCabecera(Data[0],Data[2],Data[3],Data[4],Data[5],Nro_Pedido,Descrip_Tipo_Pedido,Data[1],orgcomp,Estado_Pedido,Data[6])
-        self.de.showMaximized()
+
+        try:
+            data=[]
+            data.append(Data[0]) # Código de Sociedad - data[0]
+            data.append(Data[1]) # Nombre de Sociedad - data[1]
+            data.append(Data[2]) # Código de Usuario - data[2]
+            data.append(Data[3]) # Número de Cotización - data[3]
+            data.append(Data[4]) # Razón Social - data[4]
+            data.append(Data[5]) # Código de Proveedor - data[5]
+            data.append(self.leNro_Pedido.text()) # Número de Pedido - data[6]
+            data.append(self.cbTipo_Pedido.currentText()) # Tipo de Pedido - data[7]
+            data.append(self.leOrg_Compra.text()) # Organización de compra - data[8]
+            data.append(self.leEstado.text()) # Estado de Pedido - data[9]
+            data.append(Data[6]) # Monto Aprobado - data[10]
+
+            self.de=Depositos()
+            self.de.datosCabecera(data)
+            self.de.showMaximized()
+
+        except Exception as e:
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
+            print(e)
 
     def Cond_Pos(self):
         try:

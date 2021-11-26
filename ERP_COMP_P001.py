@@ -149,8 +149,8 @@ class ERP_COMP_P001(QMainWindow):
             data.append(Nom_Soc) # Nombre de Sociedad - data[1]
             data.append(Cod_Usuario) # Código de Usuario - data[2]
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),0).text()) # Número de Cotización - data[3]
-            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()) # Razón Social - data[4]
             Razon_Social=self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),1).text()
+            data.append(Razon_Social) # Razón Social - data[4]
             for k,v in dicProv.items():
                 if Razon_Social==v:
                     Cod_Prov=k
@@ -158,6 +158,7 @@ class ERP_COMP_P001(QMainWindow):
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),3).text()) # Monto Aprobado - data[6]
             data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),6).text()) # Fecha de Requerimiento - data[7]
             data.append("") # Número de Pedido - data[8]
+            data.append(self.tbwCot_Aprov_Ped_Comp.item(self.tbwCot_Aprov_Ped_Comp.currentRow(),5).text()) #  Número de Solicitud de Pedido - data[9]
 
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(data)
@@ -165,7 +166,7 @@ class ERP_COMP_P001(QMainWindow):
             self.pc.showMaximized()
 
         except Exception as e:
-            mensajeDialogo("informacion", "Información", "Es necesario que seleccione una fila, verifique")
+            mensajeDialogo("informacion", "Información", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def Consulta_PedComp(self):
@@ -195,12 +196,12 @@ class ERP_COMP_P001(QMainWindow):
                     if respuesta['respuesta']=='correcto':
                         mensajeDialogo("informacion", "Información", "La cotización " + Nro_Cotiza + " fue cancelada")
                     elif respuesta['respuesta']=='incorrecto':
-                        mensajeDialogo("error", "Error", "Ocurrio un problema, comuniquese con soporte")
+                        mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
 
                     self.Cargar()
 
         except Exception as e:
-            mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def Consultar(self):
@@ -228,7 +229,7 @@ class ERP_COMP_P001(QMainWindow):
             self.co.showMaximized()
 
         except Exception as e:
-            mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def Imprimir(self):
