@@ -251,13 +251,15 @@ class Consulta_PC(QMainWindow):
             data.append(Monto_Aprobado) # Monto Aprobado - data[6]
             data.append(Fecha_Req) # Fecha de Requeriemiento - data[7]
             data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),0).text()) # Número de Pedido - data[8]
+            data.append(self.tbwPedido_Compra.item(self.tbwPedido_Compra.currentRow(),2).text()) #  Número de Solicitud de Pedido - data[9]
+
             self.pc=Pedido_de_Compra()
             self.pc.datosCabecera(data)
             self.pc.pbEnviar.clicked.connect(self.Cargar)
             self.pc.showMaximized()
 
         except Exception as e:
-            mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def Consultar(self):
@@ -296,7 +298,7 @@ class Consulta_PC(QMainWindow):
             self.co.showMaximized()
 
         except Exception as e:
-            mensajeDialogo("error", "Error", "No se selecciono ninguna Cotización, verifique")
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def Salir(self):

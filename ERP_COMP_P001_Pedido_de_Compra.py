@@ -276,7 +276,13 @@ class Pedido_de_Compra(QMainWindow):
 
     def Inicio(self):
 
-        global dicPlanta
+        global dicPlanta,dicOrgComp
+
+        sqlOrgComp="SELECT Nomb_Comp,Cod_Org_Comp FROM TAB_SOC_004_Org_Compra WHERE Cod_Soc='%s'"%(Data[0])
+        OrgComp=consultarSql(sqlOrgComp)
+        dicOrgComp={}
+        for i in OrgComp:
+            dicOrgComp[i[0]]=i[1]
 
         sqlCabPed='''SELECT a.Nro_Pedido, a.Año_Pedido, a.Tipo_Pedido, a.Fecha_Doc_Pedido, a.Nro_Solp, a.Estado_Pedido, b.Descrip_moneda, c.Nomb_Comp
         FROM TAB_COMP_004_Pedido_Compra a
@@ -376,8 +382,7 @@ class Pedido_de_Compra(QMainWindow):
                 if descrip_tipo_pedido==v:
                     Tipo_pedido=k
 
-            sqlNroSolp="SELECT a.Nro_Solp FROM TAB_COMP_002_Detalle_Cotización_de_Compra d LEFT JOIN TAB_COMP_001_Cotización_Compra a ON (d.Cod_Soc=a.Cod_Soc AND d.Año=a.Año AND d.Nro_Cotiza = a.Nro_Cotiza AND d.Cod_Prov=a.Cod_Prov) WHERE d.Cod_Soc='%s' AND d.Año='%s' AND d.Nro_Cotiza='%s' AND d.Cod_Prov='%s' AND d.Estado_Item='8' AND a.Estado_Tipo='8'"%(Data[0], Año, Data[3], Data[5])
-            NroSolp=convlist(sqlNroSolp)
+            OrgCompra=dicOrgComp[self.leOrg_Compra.text()]
 
             Hora=datetime.datetime.now().strftime("%H:%M:%S.%f")
 
@@ -409,7 +414,7 @@ class Pedido_de_Compra(QMainWindow):
                 formaenvio=DatosCab[11]
                 fechavalidez=DatosCab[12]
 
-                sqlCabecera_PedComp="INSERT INTO TAB_COMP_004_Pedido_Compra(Cod_Emp, Nro_Pedido, Año_Pedido, Tipo_Pedido, Cod_Prov, Nro_Cotiza, Fecha_Doc_Pedido, Nro_Solp, Estado_Pedido, Moneda, Monto_Desc, Descuento, Forma_Pago, Forma_Envio, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_garantia, Forma_Garantia, FValidez_oferta, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Nro_Pedido,Año,Tipo_pedido,Data[5],Data[3],Fecha,NroSolp[0],Estado_Pedido,moneda,montodesc,descuento,formapago,formaenvio,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,fechavalidez,Fecha,Hora,Data[2])
+                sqlCabecera_PedComp="INSERT INTO TAB_COMP_004_Pedido_Compra(Cod_Emp, Nro_Pedido, Año_Pedido, Tipo_Pedido, Cod_Prov, Nro_Cotiza, Fecha_Doc_Pedido, Nro_Solp, Estado_Pedido, Moneda, Monto_Desc, Descuento, Forma_Pago, Forma_Envio, Cuotas_Credito, Monto_deposito, Fecha_deposito, Banco_deposito, Cuenta_Banco, Tiempo_garantia, Forma_Garantia, FValidez_oferta, Cod_Org_Comp, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Data[0],Nro_Pedido,Año,Tipo_pedido,Data[5],Data[3],Fecha,Data[9],Estado_Pedido,moneda,montodesc,descuento,formapago,formaenvio,cuotascredito,montodeposito,fechadeposito,bancodeposito,cuentabanco,tiempogarantia,formagarantia,fechavalidez,OrgCompra,Fecha,Hora,Data[2])
                 respuesta=ejecutarSql(sqlCabecera_PedComp)
 
                 self.pbCon_Cab.setEnabled(True)
@@ -484,8 +489,7 @@ class Pedido_de_Compra(QMainWindow):
                     except Exception as e:
                         print(e)
 
-                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Cant_Entregado, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg)
-                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');'''%(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, NroSolp[0],Cantidad,Precio,Moneda,Centro,Almacen,Saldo_Pendiente,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
+                    sqlDetalle='''INSERT INTO TAB_COMP_005_Detalle_Pedido_de_Compra(Cod_Empresa, Nro_Pedido, Año_Pedido, Item_Pedido, Cod_Mat, Descrp_Mat, Unid_Pedido, Nro_Cotiza,Item_Cotiza, Nro_Solp, Cant_Pedido, Precio_Pedido, Moneda, Cod_Planta, Cod_Almacen, Cant_Entregado, Good_Recep, Estado_Pedido, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');'''%(Data[0],Nro_Pedido,Año,Item,Cod_Mat,Descripcion,Unidad,Data[3],Item_Cotiza, Data[9],Cantidad,Precio,Moneda,Centro,Almacen,Saldo_Pendiente,Good_Recep,Estado_Pedido,Fecha,Hora,Data[2])
                     respuesta=ejecutarSql(sqlDetalle)
 
                     sqlUltPrecioComp="UPDATE TAB_MAT_001_Catalogo_Materiales SET Ult_precio_comp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Cod_Mat='%s';"%(Precio,Fecha,Hora,Data[2],Data[0],Cod_Mat)
@@ -516,13 +520,13 @@ class Pedido_de_Compra(QMainWindow):
                     self.limpiar()
 
                 elif respuesta['respuesta']=='incorrecto':
-                    mensajeDialogo("error", "Error", "Ocurrio un problema, comuniquese con soporte")
+                    mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
 
             else:
-                mensajeDialogo("error", "Error", "Faltan llenar datos")
+                mensajeDialogo("error", "Error", "Seleccione el Tipo de Pedido")
 
         except Exception as e:
-            mensajeDialogo("error", "Error", "Faltan llenar todos los datos")
+            mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
             print(e)
 
     def limpiar(self):
