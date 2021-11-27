@@ -8,7 +8,7 @@ from Pedido_de_Compra_Datos_Importacion_Continuacion import Continuacion
 import urllib.request
 
 sqlProvAdu="SELECT Razón_social,Cod_prov FROM TAB_PROV_001_Registro_de_Proveedores WHERE Tip_Prov='5'"
-sqlPais="SELECT Nombre, Cod_Pais FROM TAB_SOC_009_Ubigeo WHERE Cod_Depart_Region='0' AND Cod_Provincia='0' AND Cod_Distrito='0'"
+sqlPais="SELECT Nombre, Cod_Pais FROM TAB_SOC_009_Ubigeo_NuevaVersion WHERE Cod_Depart_Region='00' AND Cod_Provincia='00' AND Cod_Distrito='00'"
 sqlMoneda="SELECT Descrip_moneda,Cod_moneda FROM TAB_SOC_008_Monedas"
 
 # sqlProvTra="SELECT Razón_social,Cod_prov FROM TAB_PROV_001_Registro_de_Proveedores WHERE Tip_Prov='4'"

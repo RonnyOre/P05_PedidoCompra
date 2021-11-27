@@ -7,6 +7,9 @@ from PyQt5.QtGui import*
 import urllib.request
 
 sqlFormaPago="SELECT Descrip_Pago, Forma_Pago FROM `TAB_SOC_024: Forma de pago`"
+sqlMoneda="SELECT Descrip_moneda, Cod_moneda FROM TAB_SOC_008_Monedas"
+sqlBanco="SELECT Descrip_Banco, Cod_Banco FROM TAB_SOC_016_Tipo_de_Bancos"
+sqlPais="SELECT Nombre, Cod_Pais FROM TAB_SOC_009_Ubigeo_NuevaVersion WHERE Cod_Depart_Region='00' AND Cod_Provincia='00' AND Cod_Distrito='00'"
 
 class Depositos(QMainWindow):
     def __init__(self):
@@ -54,21 +57,33 @@ class Depositos(QMainWindow):
         cargarIcono(self.pbSalir, 'salir')
         cargarIcono(self.pbGrabar, 'grabar')
 
-        global dicpago, dicmoneda, dicbanco, dicpais
+        global dicFormaPago, dicmoneda, dicbanco, dicpais
 
-        condpago=consultarSql(sqlCondPago)
-        dicpago={}
-        for dato in condpago:
-            dicpago[dato[1]]=dato[0]
+        FormaPago=consultarSql(sqlFormaPago)
+        dicFormaPago={}
+        for dato in FormaPago:
+            dicFormaPago[dato[1]]=dato[0]
 
-        insertarDatos(self.cbCondicion_Credito,condpago)
-        self.cbCondicion_Credito.setCurrentIndex(-1)
+        moneda=consultarSql(sqlMoneda)
+        dicmoneda={}
+        for dato in moneda:
+            dicmoneda[dato[1]]=dato[0]
+
+        banco=consultarSql(sqlBanco)
+        dicbanco={}
+        for dato in banco:
+            dicbanco[dato[1]]=dato[0]
+
+        pais=consultarSql(sqlPais)
+        dicpais={}
+        for dato in pais:
+            dicpais[dato[1]]=dato[0]
 
         self.Inicio()
 
     def Inicio(self):
 
-        sqlBanco='''SELECT f.Descrip_Pago, c.Descrip_Banco, d.Nombre, e.Descrip_moneda, a.Cuenta_Banco
+        sqlBanco='''SELECT c.Descrip_Banco, d.Nombre, e.Descrip_moneda, a.Cuenta_Banco, f.Descrip_Pago, a.Cuotas_Credito
         FROM TAB_COMP_004_Pedido_Compra a
 		LEFT JOIN TAB_PROV_007_Bancos_y_cuentas_del_Proveedor b ON b.Cod_Prov=a.Cod_Prov AND b.Nro_Correlativo=a.Banco_deposito
         LEFT JOIN TAB_SOC_016_Tipo_de_Bancos c ON c.Cod_Banco=b.Entidad_Bancaria
@@ -85,6 +100,9 @@ class Depositos(QMainWindow):
         self.cbMoneda.addItem(Banco[2])
         self.cbMoneda.setCurrentIndex(0)
         self.leNro_Cuenta.setText(Banco[3])
+        self.cbFormaPago.addItem(Banco[4])
+        self.cbFormaPago.setCurrentIndex(0)
+        self.leCuotas.setText(Banco[5])
 
         # sqlDep='''SELECT a.Monto_Compra, b.Descrip_moneda, c.Descrip_cond, a.Cuotas_Pagar, a.Cuota, a.Porc_Adelanto, a.Adelanto, d.Descrip_Banco, a.Nro_Cuenta, e.Nombre
         # FROM TAB_COMP_014_Pedido_de_Compra_Crédito_Depósitos a
@@ -155,6 +173,7 @@ class Depositos(QMainWindow):
             n2 = float(Porc_Adelanto)
             res = eval("n1 * (n2 / 100)")
             self.leAdelanto.setText(formatearDecimal(str(res),'3'))
+            self.leAdelanto.setReadOnly(True)
 
     def AgregarFila(self,fila,columna):
         if fila==self.tbwDeposito.rowCount()-1:
