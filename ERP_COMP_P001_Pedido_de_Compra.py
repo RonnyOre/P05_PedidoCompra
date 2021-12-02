@@ -527,7 +527,9 @@ class Pedido_de_Compra(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def limpiar(self):
         global texto_cabecera, dict_textoPosicion
@@ -751,7 +753,9 @@ class Pedido_de_Compra(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Reporte Fallido")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Enviar(self):
         try:
@@ -776,7 +780,9 @@ class Pedido_de_Compra(QMainWindow):
                 mensajeDialogo("error", "Error", "No se pudo enviar el correo")
         except Exception as e:
             mensajeDialogo("error", "Error", "No se pudo enviar el correo")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Dat_Imp(self):
         Descrip_Tipo_Pedido=self.cbTipo_Pedido.currentText()
@@ -827,7 +833,9 @@ class Pedido_de_Compra(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Cond_Pos(self):
         try:
@@ -852,7 +860,9 @@ class Pedido_de_Compra(QMainWindow):
             self.cp.showMaximized()
         except Exception as e:
             mensajeDialogo("error", "Error", "No se selecciono ninguna posición, verifique")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def TextoCabecera(self):
         try:

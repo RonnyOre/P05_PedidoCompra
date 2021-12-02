@@ -149,7 +149,9 @@ class Consulta_PC(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "No se pudieron cargar los datos")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def palabraClave(self):
         buscarTablaPC(self,self.tbwPedido_Compra)
@@ -176,7 +178,9 @@ class Consulta_PC(QMainWindow):
             else:
                 mensajeDialogo("error", "Error", "Código de Material no existe")
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def codigoMaterial(self):
         try:
@@ -198,7 +202,9 @@ class Consulta_PC(QMainWindow):
                 self.leUnidad.clear()
 
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Fecha_Inicial(self):
         Fec_Inicial=QDateToStrView(self.deInicial)
@@ -260,7 +266,9 @@ class Consulta_PC(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Consultar(self):
         try:
@@ -299,7 +307,9 @@ class Consulta_PC(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Error en la ejecución, comuniquese con soporte")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Salir(self):
         self.close()
